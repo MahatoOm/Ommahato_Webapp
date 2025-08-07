@@ -1,26 +1,184 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <title>
-            Everything
-        </title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Personal Portfolio</title>
+        <!-- <link rel="stylesheet" href="style.css"> -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <script src="https://kit.fontawesome.com/836187b299.js" crossorigin="anonymous"></script>
+
     </head>
     <body>
-        <p> 
-            <br>
-            <br>
-            <br>
-            <br>
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
 
+       <div id="header">
+       <div class="container">
+        <nav>
+            <img src="{{url_for('static', filename = 'Images/logo.png')}}" class="logo">
+            <ul> 
+                <li><a href="#" >Home</a></li>
+                <li><a href="#" >About</a></li>
+                <li><a href="#" >Services</a></li>
+                <li><a href="#" >Portfolio</a></li>
+                <li><a href="#" >Contact</a></li>
+
+            </ul>
+        </nav>
+        <div class="header-text">
+            <p>Python Developer </p>
+            <h1>Hi, I'm <span>Om Mahato</span>         <img src="{{url_for('static', filename = 'Images/linkedin cover.png')}}" class="cover">   </h1>
+        </div>
+
+        
+       </div>
+        </div> 
+<!--------------------about------------------>
+        <div id="about">
+            <div class="container">
+                <div class="row">
+                    <div class="about-col-1">
+                        <img src="{{url_for('static', filename = 'Images/Logo Design Certificate.jpeg')}}" >
+                    </div>
+                    <div class="about-col-2">
+                        <br>
+                        <br>
+                        <br>
+                        <h1 class="sub-title">About Me</h1>
+                        <p>
+                            Hello, I'm Om Prakash Mahato, an ambitious individual
+                             dedicated to continual growth and learning. 
+                              I have a solid foundation in the Python,
+                               Django, Java, and Web development. 
+                               I am actively exploring Web development and 
+                               Ml/AI development to stay abreast of industry
+                                trends. I take pride in my hands-on approach, 
+                                evident in projects like building an 
+                                website ( https://ommahato.com/ ).
+                                 Embracing diversity and aiming for a global impact,
+                                  I am eager to connect, collaborate, and explore new
+                                   opportunities.
+                             Let's connect and chat a course for success together! 🚀
+                        </p>
+
+                        <div class="tab-titles">
+                            <p class="tab-links active-link" onclick="opentab('skills')">Skills</p>
+                            <p class="tab-links" onclick="opentab('experience')">Experience</p>
+                            <p class="tab-links" onclick="opentab('education')">Education</p>
+                        </div>
+                        <div class="tab-contents active-tab" id="skills">
+                            <ul>
+                                <li><span>Designing</span><br>Logo and Graphic designing</li>
+                                <li><span>Python Development</span><br>Python Development</li>
+                                <li><span>Web Development</span><br>Web Development</li>
+                            </ul>
+                        </div>
+                        <div class="tab-contents" id="experience">
+                            <ul>
+                                <li><span>Designing</span><br>Designed logo for NSA</li>
+                                <li><span>Tutor</span><br>Teacher for about 6 month.</li>
+                                <li><span>Web Development</span><br>Designed my website https://ommahato.com/ </li>
+                            </ul>
+                        </div>
+                        <div class="tab-contents" id="education">
+                            <ul>
+                                <li><span>Undergrad</span><br>Studying at Dallas College</li>
+                                <li><span>High School</span><br>CCRC</li>
+                                <li><span>School</span><br>MVM</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                 
+            </div>
+        </div>
+        <!-----------------------services-------------------->
+<div id="services">
+    <div class="container">
+        <h1 class="sub-title">Services</h1>
+        <div class="services-list">
+            <div>
+                <i class="fa-solid fa-code"></i>
+                <h2>Web Design</h2>
+                <p>
+                    Visit at my webpage - https://ommahato.com/
+                </p>
+                <a href="#">learn more</a>
+            </div>
+            <div>
+                <i class="fa-brands fa-joomla"></i>
+                <h2>Logo Design</h2>
+                <p>
+                    Visit at my Logos - https://ommahato.com/
+                </p>
+                <a href="#">learn more</a>
+            </div>
+            <div>
+                <i class="fa-solid fa-mobile"></i>
+                <h2>App Design</h2>
+                <p>
+                    Visit at my Apps - https://ommahato.com/
+                </p>
+                <a href="#">learn more</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--------------------------Portfolio-------------------->
+<div id="portfolio">
+    <div class="container">
+        <h1 class="sub-title">My Life</h1>
+        <div class="work-list">
+            <div class="work">
+                <img src="{{url_for('static', filename = 'Images/mindluster.jpg')}}" class="portfolio_img">
+            </div>
+            <div class="work">
+                <img src="{{url_for('static', filename = 'Images/hackerrank.png')}}" class="portfolio_img">
+            </div>
+            <div class="work">
+                <img src="{{url_for('static', filename = 'Images/leet100.png')}}" class="portfolio_img">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!---------------------contact  -------------->
+ <div id="contact">
+    <div class="container">
+        <div class="row">
+            <div class="contact-left">
+                <h1 class="sub-title">Contact Me</h1> 
+                <p><i class="fa-regular fa-paper-plane"></i>  ommahato@ommahato.com</p>
+            
+            <div class="social-icons">
+                <a href="https://www.facebook.com/om.mahato.114576/"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://github.com/MahatoOm"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/om-prakash-mahato-32771a243/"><i class="fa-brands fa-linkedin"></i></i></a>
+                <a href="https://leetcode.com/u/ompro/" alt  ='leetcode' ><i class ="fa-brands" > <img src = "{{url_for('static', filename= 'Images/leetcode.png')}}" class = "fa-brands leetcode"></i></a>
+            </div>
+            <a href="{{url_for('static', filename = 'Images/Om Resume Mail.pdf')}}" class="btn btn2">Download CV</a> 
+        </div>
+        <div class="contact-right">
+            <form action = '/collect_subscribe'>
+                <input type="text" name="Name" placeholder="Your Name" required>
+                <input type="email" name="Email" placeholder="Your Email" required>
+                <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
+                <button type="submit" class="btn btn2">Submit</button>
+
+            </form>
+        </div>
+    </div>
+    </div>
+    <div class="copyright">
+        <p>
+            Copyright <i class="fa-regular fa-copyright"></i> Om Prakash Mahato </i>
         </p>
-        <h1 style="color: blue;"><marquee>
-            Wow!!!
-        </marquee>
-        <h1></h1>
-        <h1>
-            This is what makes me happy.<br>
-            Signed by<br> Om Mahato.
-        </h1>
-
+    </div>
+ </div>
+ 
     </body>
-   
 </html>
+
