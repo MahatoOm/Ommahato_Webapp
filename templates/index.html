@@ -1,39 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Personal Portfolio</title>
-        <!-- <link rel="stylesheet" href="style.css"> -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <script src="https://kit.fontawesome.com/836187b299.js" crossorigin="anonymous"></script>
+{% extends "base.html" %}
 
-    </head>
-    <body>
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
         <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-       <div id="header">
-       <div class="container">
-        <nav>
-            <img src="{{url_for('static', filename = 'Images/logo.png')}}" class="logo">
-            <ul> 
-                <li><a href="#" >Home</a></li>
-                <li><a href="#" >About</a></li>
-                <li><a href="#" >Services</a></li>
-                <li><a href="#" >Portfolio</a></li>
-                <li><a href="#" >Contact</a></li>
-
-            </ul>
-        </nav>
+     
+       
         <div class="header-text">
             <p>Python Developer </p>
-            <h1>Hi, I'm <span>Om Mahato</span>         <img src="{{url_for('static', filename = 'Images/linkedin cover.png')}}" class="cover">   </h1>
+            <h1>Hi, I'm <span>Om Mahato</span>   </h1>
         </div>
 
+
+      
+        <div class="scroll-container">
+         <img src="{{ url_for('static', filename='Images/linkedin cover.png') }}" class="image_cover_scroll">
+        </div>
+
+    
         
-       </div>
-        </div> 
+       
 <!--------------------about------------------>
         <div id="about">
             <div class="container">
@@ -146,39 +133,11 @@
 </div>
 
 <!---------------------contact  -------------->
- <div id="contact">
-    <div class="container">
-        <div class="row">
-            <div class="contact-left">
-                <h1 class="sub-title">Contact Me</h1> 
-                <p><i class="fa-regular fa-paper-plane"></i>  ommahato@ommahato.com</p>
-            
-            <div class="social-icons">
-                <a href="https://www.facebook.com/om.mahato.114576/"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://github.com/MahatoOm"><i class="fa-brands fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/om-prakash-mahato-32771a243/"><i class="fa-brands fa-linkedin"></i></i></a>
-                <a href="https://leetcode.com/u/ompro/" alt  ='leetcode' ><i class ="fa-brands" > <img src = "{{url_for('static', filename= 'Images/leetcode.png')}}" class = "fa-brands leetcode"></i></a>
-            </div>
-            <a href="{{url_for('static', filename = 'Images/Om Resume Mail.pdf')}}" class="btn btn2">Download CV</a> 
-        </div>
-        <div class="contact-right">
-            <form action = '/collect_subscribe'>
-                <input type="text" name="Name" placeholder="Your Name" required>
-                <input type="email" name="Email" placeholder="Your Email" required>
-                <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
-                <button type="submit" class="btn btn2">Submit</button>
+ <!-- THis will make contact section from contact_section.html  just minimizing the code redundancy-->
+    {% include 'partials/contact_section.html' %} 
 
-            </form>
-        </div>
-    </div>
-    </div>
-    <div class="copyright">
-        <p>
-            Copyright <i class="fa-regular fa-copyright"></i> Om Prakash Mahato </i>
-        </p>
-    </div>
- </div>
+    
+    
  
-    </body>
-</html>
+{% endblock %}
 

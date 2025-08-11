@@ -1,5 +1,27 @@
-<html>
-    <h1>
-        Projects
-    </h1>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Portfolio{% endblock %}
+
+{% block content %}
+    <h1 style="text-align: center;">Welcome to the portfolio Page</h1>
+    <center><p>This is my certifications.</p></center>
+    <div class = 'container'>
+        <div class = 'portfolio_image'>
+            <img src = "{{url_for("static" , filename = "Images/Logo Design Certificate.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/nsa_logo.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/cert_of_rec_nsa_logo.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/leet100.png")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/linked1.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/linked2.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/linked3.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/linked4.jpeg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/linked5.jpg")}}" class = 'port_img'>
+            <img src = "{{url_for("static" , filename = "Images/linked6.jpg")}}" class = 'port_img'>
+            
+            <img src = "{{url_for("static" , filename = "Images/mindluster.jpg")}}" class = 'port_img'>
+         
+            
+        </div>
+    </div>
+    
+{% endblock %}

@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, flash
 import logging
 
 app = Flask(__name__)
-
+app.secret_key = "secret_key_here" # for flashing notification
 
 @app.route('/')
 def homepage():
@@ -70,7 +70,41 @@ def collect_contact():
         # logging.debug(email )
         return 'Successfully logged'
     else:
-        return 'not looged'
+        return 'not logged'
+    
+
+# for collecting user detail from contact.html
+@app.route('/collectsubscribe', methods = ['POST', 'GET'])
+def collectsubscribe():
+    if request.method == "POST":
+        
+
+        name = request.form['Name']
+        email = request.form['Email']
+        message = request.form['Message']
+        
+        
+        flash('Submission Sucessfull') # flashes notification of submission
+        # return f'Your name is {name}, email is {email}, message is {message} '
+
+        return redirect(url_for('contact'))
+      
+    else:
+        return 'not logged'
+    
+
+def showNotifica():
+    pass
+
+@app.route('/portfolio')
+def portfolio():
+    return render_template('projects.html')
+
+@app.route('/services')
+def services():
+    return 'Services'
+
+    
 
 
 if __name__ == '__main__' :

@@ -1,0 +1,31 @@
+<!---------------------contact  -------------->
+ <div id="contact">
+    <div class="container">
+        <div class="row">
+            <div class="contact-left">
+                <h1 class="sub-title">Contact Me</h1> 
+                <p><i class="fa-regular fa-paper-plane"></i>  ommahato@ommahato.com</p>
+            
+            <div class="social-icons">
+                <a href="https://www.facebook.com/om.mahato.114576/"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://github.com/MahatoOm"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/om-prakash-mahato-32771a243/"><i class="fa-brands fa-linkedin"></i></i></a>
+                <a href="https://leetcode.com/u/ompro/" alt  ='leetcode' ><i class ="fa-brands" > <img src = "{{url_for('static', filename= 'Images/leetcode.png')}}" class = "fa-brands leetcode"></i></a>
+            </div>
+            <a href="{{url_for('static', filename = 'Images/Om Resume Mail.pdf')}}" class="btn btn2">Download CV</a> 
+        </div>
+        <div class="contact-right">
+            <form action = '/collect_subscribe'>
+                <input type="text" name="Name" placeholder="Your Name" required>
+                <input type="email" name="Email" placeholder="Your Email" required>
+                <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
+                <button type="submit" class="btn btn2">Submit</button>
+
+            </form>
+        </div>
+    </div>
+    </div>
+
+
+
+    

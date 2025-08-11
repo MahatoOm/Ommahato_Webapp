@@ -1,16 +1,25 @@
-<html>
-    <h1>
-        Contact Us
-    </h1>
+{% extends "base.html" %}
 
-    <form action = '/collect_contact' method = 'post' >
-        <label for="Name" >Name: </label><br>
-        <input type="text" id="name" name="name" value="0"><br>
+{% block title %}Contact Us{% endblock %}
 
-        <label for="Email" >Email: </label><br>
-        <input type="text" id="email" name="email" value="0"><br>
+{% block content %}
 
-        <input type = 'submit'  name = "submit">
+    
+    
 
-    </form>
-</html>
+<!-- This portion displays the submission sussessfull messages afeter submit button is clicked. -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      
+        <div style="background-color: #38d1f0; padding: 10px; border: 1px solid #100505;">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- THis will make contact section from contact_section.html  just minimizing the code redundancy-->
+    {% include 'partials/contact_section.html' %} 
+    {% endblock %}
+    

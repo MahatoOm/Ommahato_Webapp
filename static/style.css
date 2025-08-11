@@ -3,34 +3,52 @@
     padding: 0;
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
 body{
+    display: flex;
+    flex-direction: column;
     background: #080808;
     color: #fff;
+    
+    min-height: 100vh;
 
 }
 
 #header{
-    width: 100%;
-    height: 50vh;
-    background-image: url(Images/om3.jpg);
-    background-size: cover;
-    background-position: center; 
+    /* width: 100%; */
+    /* height: 20px;
+     */
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
-.cover{
-    
-    width: 100%;
-    height: 100%;
-    margin-top: 20px;
-    border-radius: 15px;
+
+.scroll-container {
+    padding: 60px 5%;
+  width: 100vw;
+  overflow-x: auto;    /* horizontal scroll */
+  white-space: nowrap; /* prevent wrapping */
 }
+
+.image_cover_scroll {
+  height: 35vh;
+  object-fit: cover;
+  border-radius: 15px;
+  display: inline-block; /* important for nowrap to work */
+}
+
 
 
 
 .container{
-    padding:  60px 10% ;
+    padding:  60px 5% ;
 }
 
 nav{
@@ -74,8 +92,11 @@ nav ul li a:hover::after{
 }
 
 .header-text{
-    margin-top: 10%;
+    margin-top: 20px;
     font-size: 30px;
+    margin-left: 80px;
+    margin-right: 80px;
+   
 }
 .header-text h1{
     font-size: 60px;
@@ -84,33 +105,49 @@ nav ul li a:hover::after{
 .header-text h1 span{
     color: #00fcff;
 }
+.header-text img{
+    width: 100%;
+    height: 25vh;
+    margin-top: 20px;
+    border-radius: 15px;
+}
 /*--------------about---------------*/
 
 #about{
-    margin: 80px;
-    padding: 80px;
+     /* margin: 10px; */
+    /* padding: 20px; */
     color: #ababab;
 }
 .row{
     display: flex;
      justify-content: space-between;
      flex-wrap: wrap;
-     padding : 20px;
+     
 }
 
 .about-col-1{
 
-    flex-basis: 35%;
+    flex-basis:  1 1 100% ;
+    max-width: 100%;
+    
 }
 .about-col-1 img{
     width: 100%;
     border-radius: 15px;
+    height: auto;
+    display: block;
 
 }
 .about-col-2{
     
-    flex-basis: 60%;
+    flex-basis: 1 1 100%;
+    padding: 20px 0;
 }
+
+
+
+
+
 .sub-title{
     font-size: 60px;
     font-weight: 600;
@@ -158,6 +195,21 @@ nav ul li a:hover::after{
 
 .tab-contents.active-tab{
     display: block;
+}
+
+
+/* For larger screens, side by side */
+@media (min-width: 768px) {
+    .about-col-1 {
+        flex: 0 0 35%;  /* fixed 35% width */
+        max-width: 35%;
+    }
+
+    .about-col-2 {
+        flex: 0 0 60%;  /* fixed 60% width */
+        max-width: 60%;
+        padding: 0 20px;
+    }
 }
 
 /*-------------------services----------------*/
@@ -223,14 +275,19 @@ nav ul li a:hover::after{
 }
  /*--------------contact--------------*/
 
+
+#contact h1{
+    margin-bottom: 20px;
+}
  .contact-left{
-    flex-basis: 35%;  
+    flex-basis: 1 1 100%;  
  }
  .contact-right{
-    flex-basis: 60%;
+    flex-basis: 1 1 100%;
  }
  .contact-left p{
-    margin-top: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px
  }
  .contact-left p i{
     color: #00fcff;
@@ -241,7 +298,33 @@ nav ul li a:hover::after{
     margin-top: 20px;
     padding: 15px;
     border-radius: 10px;
+    color : #00fcff;
+    text-decoration: none; 
  }
+
+
+
+.contact-left a:hover {
+  color: yourHoverColor;  /* color on mouse hover */
+  text-decoration: underline; /* optional: underline on hover */
+}
+
+.download cv{
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    color : #00fcff;
+    text-decoration: none; 
+ }
+
+
+
+.contact-left a:hover {
+  color: yourHoverColor;  /* color on mouse hover */
+  text-decoration: underline; /* optional: underline on hover */
+}
+
+
  .social-icons{
     margin-top: 30px;
  }
@@ -260,6 +343,7 @@ nav ul li a:hover::after{
  .btn.btn2{
     display: inline-block;
     background: #00fcff;
+    color : black
  }
  .contact-right form{
     width: 100%;
@@ -284,18 +368,43 @@ form .btn2{
     cursor: pointer;
     border-radius: 10px;
 }
-.copyright{
-    width: 100%;
-    text-align: center;
-    padding: 25px;
-    background: #262626;
-    font-weight: 300;
-    margin-top: 20px;
+
+
+.portfolio_image{
+    margin : 30px;
+    padding: 10px
 }
-  
+
+.port_img{
+    margin: 30px;
+    width: 450px;
+    height: 500px;
+
+}
 
 
 .leetcode{
     height: 20px;
     width: 30px
 }
+
+
+/* main {
+  flex: 1;
+  
+} */
+
+#main_content{
+    flex : 1;
+    padding: 20px;
+    /* margin:20px; */
+}
+
+#footer, .copyright{
+    padding: 10px;
+    text-align: center;
+    
+}
+  
+
+

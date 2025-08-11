@@ -1,0 +1,56 @@
+<!-- THis is base file for header and footer -->
+
+
+<html>
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}
+            Personal Portfolio
+            {% endblock %}
+        </title> 
+        <!-- flask formatting -->
+        
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <script src="https://kit.fontawesome.com/836187b299.js" crossorigin="anonymous"></script>
+
+    </head>
+
+    <body>
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+        <div id="header">
+       <div class="container">
+        <nav>
+            <img src="{{url_for('static', filename = 'Images/logo.png')}}" class="logo">
+            <ul> 
+                <li><a href="/" >Home</a></li>
+                <li><a href="{{url_for('homepage')}}#about">About</a></li>
+                <li><a href="{{url_for('homepage')}}#services" >Services</a></li>
+                <li><a href="/portfolio" >Portfolio</a></li>
+                <li><a href="/contact" >Contact</a></li>
+
+            </ul>
+        </nav>
+        </div>
+        </div>
+        <!-- MAIN CONTENT -->
+    <main id = 'main_content'>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer id = 'footer'> 
+    <div clas="copyright">
+        <p>
+            Copyright <i class="fa-regular fa-copyright"></i>
+            Om Prakash Mahato
+        </p>
+    </div>
+    </footer>
+        
+    </body>
+</html>
