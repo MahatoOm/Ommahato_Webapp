@@ -1,8 +1,61 @@
 from flask import Flask, render_template, request, url_for, redirect, flash
 import logging
 
+
+
+
+# for connecting to mongo db server
+from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
+
+# load .env variables that we stored cluter string from mongodv in .env 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = "secret_key_here" # for flashing notification
+# for flashing notification and mongodb server
+app.secret_key = os.getenv("SECRET_KEY", "default_secret")
+
+
+# if If your actual site and backend are on different domains, Flask needs flask-cors so browsers allow the request.
+from flask_cors import CORS
+CORS(app)
+
+
+# configure logging
+# for production, consider writing to a file or an external logging service
+
+if not app.debug:
+    file_handler = logging.FileHandler('app_error.log')
+    file_handler.setLevel(logging.WARNING)
+    formatter = logging.Formatter('%(asctime)s- %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+# Connect to MongoDB
+mongo_uri = os.getenv("MONGO_URI")
+print("Connecting to:", mongo_uri)
+if not mongo_uri:
+    # Use app.logger for critical errors
+    app.logger.critical("MONGO_URI is not set in .env. Application cannot to database.")
+    raise ValueError("MONGO_URI is not set in .env")
+
+try:
+    client = MongoClient(mongo_uri)
+
+    # The ping command is cheap and does not require authorization
+    client.admin.command('ping')
+    app.logger.info("Sucessfully connected to MongoDB!")
+except Exception as e:
+    app.logger.critical(f'Could not connect to MongoDB : {e}')
+    # Depending on criticality, you might want to raise here or make the app unusable
+
+    raise ConnectionError(f"Failed to connect to MongoDB: {e}")
+
+
+
+db = client["contactdb"]  # Database name
+contacts = db["contacts"] # Collection name
 
 @app.route('/')
 def homepage():
@@ -18,29 +71,6 @@ def blogs():
 @app.route('/contact', methods = ['GET', 'POST'] )
 def contact():
 
-#     if request.method == 'POST':
-#         # name = request.form['name']
-#         # email = request.form['email']
-#         # logger = logging.logger(logging.DEBUG)
-#         # handler = logging.FileHandler('info.log')
-#         # formatter = logging.Formatter('%(message)s')
-#         # handler.setFormatter(formatter)
-#         # logger.addFileHandler(handler)
-
-# #         logging.basicConfig(
-# #         filename = 'info.log',
-# #         filemode = 'w',
-# #         level = logging.DEBUG,
-# #         format = '%(asctime)s-%(name)s-%(levelname)s-%(message)s',
-# #         datefmt= '%Y-%m-%d %H:%M:%S'
-# # )
-        
-
-
-#         # logging.debug(name )
-#         # logging.debug(email )
-#         return redirect(url_for('projects'))
-#     else:
      return render_template('contact.html')
     
 @app.route('/projects', methods = ['GET', 'POST'] )
@@ -49,44 +79,36 @@ def projects():
     return render_template('projects.html')
 
 
-@app.route('/collect_contact')
-def collect_contact():
-    if request.method == "POST":
-        # name = request.form['name']
-        # email = request.form['email']
-        # # logger = logging.logger(logging.DEBUG)
-        # # handler = logging.FileHandler('info.log')
-        # # formatter = logging.Formatter('%(message)s')
-        # # handler.setFormatter(formatter)
-        # # logger.addFileHandler(handler)
 
-        # logging.basicConfig(
-        # filename = 'info.log',
-        # filemode = 'w',
-        # level = logging.DEBUG,
-        # format = '%(asctime)s-%(name)s-%(levelname)s-%(message)s',
-        # datefmt= '%Y-%m-%d %H:%M:%S')
-        # logging.debug(name )
-        # logging.debug(email )
-        return 'Successfully logged'
-    else:
-        return 'not logged'
-    
 
 # for collecting user detail from contact.html
-@app.route('/collectsubscribe', methods = ['POST', 'GET'])
-def collectsubscribe():
+@app.route('/collect_subscribe', methods = ['POST', 'GET'])
+def collect_subscribe():
     if request.method == "POST":
         
 
-        name = request.form['Name']
-        email = request.form['Email']
-        message = request.form['Message']
-        
-        
-        flash('Submission Sucessfull') # flashes notification of submission
-        # return f'Your name is {name}, email is {email}, message is {message} '
+        name = request.form.get('Name')
+        email = request.form.get('Email')
+        message = request.form.get('Message')
 
+        if not (name and email and message):
+            flash('All fields required', 'error')
+            raise redirect(url_for('contact'))
+
+        try:
+            contacts.insert_one({
+                'name': name,
+                'email': email,
+                'message' : message
+            })
+            flash('Submission Sucessfull') # flashes notification of submission
+        except Exception as e:
+            app.logger.error(f"MongoDB insertion error: {e}")
+            flash('An unexcepted error occurred while submitting your response. ')
+        
+        
+        
+        # return f'Your name is {name}, email is {email}, message is {message} '
         return redirect(url_for('contact'))
       
     else:

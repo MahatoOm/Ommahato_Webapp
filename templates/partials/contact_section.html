@@ -4,7 +4,7 @@
         <div class="row">
             <div class="contact-left">
                 <h1 class="sub-title">Contact Me</h1> 
-                <p><i class="fa-regular fa-paper-plane"></i>  ommahato@ommahato.com</p>
+                <p> <a href = "mailto:ommahato@ommahato.com"><i class="fa-regular fa-paper-plane"></i>  Email: ommahato@ommahato.com</a></p>
             
             <div class="social-icons">
                 <a href="https://www.facebook.com/om.mahato.114576/"><i class="fa-brands fa-facebook-f"></i></a>
@@ -15,7 +15,14 @@
             <a href="{{url_for('static', filename = 'Images/Om Resume Mail.pdf')}}" class="btn btn2">Download CV</a> 
         </div>
         <div class="contact-right">
-            <form action = '/collect_subscribe'>
+            <!-- if posting from the live site -->
+             
+            <form action = 'https://ommahato-webapp-new.onrender.com/collect_subscribe' method = 'POST'> 
+
+
+
+            <!-- If posting locally for testing  -->
+            <!-- <form action = '/collect_subscribe' method = 'post'>  -->
                 <input type="text" name="Name" placeholder="Your Name" required>
                 <input type="email" name="Email" placeholder="Your Email" required>
                 <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
