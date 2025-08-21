@@ -8,4 +8,3 @@ flask-cors
 # for google search console sitemap
 flask-sitemap
 openai
-os
