@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, url_for, redirect, flash
 import logging
 
+from openai import OpenAI
+import requests
+import os
 
-
+from flask_sitemap import Sitemap
 
 # for connecting to mongo db server
 from pymongo import MongoClient
@@ -15,6 +18,10 @@ load_dotenv()
 app = Flask(__name__)
 # for flashing notification and mongodb server
 app.secret_key = os.getenv("SECRET_KEY", "default_secret")
+
+
+# for generating sitemap (sitemap.xml) for google search console
+ext = Sitemap(app=app)
 
 
 # if If your actual site and backend are on different domains, Flask needs flask-cors so browsers allow the request.
@@ -59,7 +66,52 @@ contacts = db["contacts"] # Collection name
 
 @app.route('/')
 def homepage():
-    return render_template('index.html')
+    data = [
+        {
+            "question" : "Which language is used in Data Science?",
+            "option1":"Python",
+            "option2":"Java",
+            "option3":"C++",
+            "level":"easy",
+            "language":"python",
+            "id": 1,
+            "ans":"python"
+        },
+        {
+            "question" : "What is the DATATYPE of (3,4)?",
+            "option1":"List",
+            "option2":"Dictionary",
+            "option3":"Tuple",
+            "level":"easy",
+            "language":"DSA",
+            "id": 2 ,
+            "ans":"Tuple"
+            
+        },
+        {
+            "question" : "3==3.0?",
+            "option1":"True",
+            "option2":"False",
+            "option3":"NA",
+            "level":"easy",
+            "language":"Boolean",
+            "id":4,
+            "ans":"True"
+            
+        },
+        {
+            "question" : "What does len command does?",
+            "option1": "calculate the length",
+            "option2": "convert into integer",
+            "option3":"calculate the sum",
+            "level":"easy",
+            "language":"",
+            "id":5,
+            "ans":"calculate the length"
+            
+        }
+    ]
+    return render_template('index.html', data = data)
     # return "our site is live"
 
 @app.route('/blogs', methods = ['GET', 'POST'] )
@@ -126,7 +178,37 @@ def portfolio():
 def services():
     return 'Services'
 
+
+@app.route('/chatbot_page' ,methods = ['POST', 'GET'])
+def chatbot_page():
+    if request.method == 'POST':
+
+        inp = request.form.get('Chat')
+        content = generate_response(inp)
+        return 'Sucessfullfully collected' + inp + content
     
+    return render_template('chatbot.html')
+
+
+
+# This works fine
+
+client = OpenAI(api_key = os.getenv("OPENAI_API_KEY"))
+
+def generate_response(data):
+  response = client.responses.create(
+    model="gpt-4o-mini",
+    instructions="You are a comedian that tells jokes about {data}",
+    input=data,
+    # store=True,
+  )
+  return response.output_text
+
+
+
+
+
+
 
 
 if __name__ == '__main__' :

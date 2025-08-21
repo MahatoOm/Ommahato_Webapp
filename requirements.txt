@@ -5,3 +5,5 @@ pymongo
 python-dotenv
 dnspython
 flask-cors
+# for google search console sitemap
+flask-sitemap

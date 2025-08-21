@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Bot {% endblock %}
+
+{% block content %}
+
+    <div name = 'container'>
+
+        <div name = 'chatbot'>
+
+            <h1>Ask Anything With ChatBot</h1>
+                    <!-- If posting locally for testing  -->
+            <form action = '/chatbot_page' method = 'post'>
+                <input type = 'text' name = 'Chat' placeholder = 'Type here' required>
+
+
+            
+            
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

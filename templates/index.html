@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Contact Us{% endblock %}
+{% block title %}Personal Portfolio{% endblock %}
 
 {% block content %}
         <script src="{{ url_for('static', filename='script.js') }}"></script>
@@ -80,6 +80,35 @@
                  
             </div>
         </div>
+
+<!-- This is for mcq practice -->
+
+
+<div class="container">
+    <div class="mcq_head">
+        <h2 id="question"></h2>
+        <label><input type = "radio" name="option" value = "option1"><span id="option1"></span> </label><br>
+        <label><input type = "radio" name="option" value = "option2"><span id="option2"></span> </label><br>
+        <label><input type = "radio" name="option" value = "option3"><span id="option3"></span> </label><br>       
+
+        <br>
+        <p id="flash-message" style="font-weight: bold; margin-top: 10px;"></p> <!-- Placeholder -->
+        <div name="sub">
+
+            <button onclick="submit()">Submit</button>
+            <button onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+</div>
+
+<!-- inject data -->
+<script>
+    window.questions = JSON.parse('{{ data | tojson | safe }}');
+    console.log(window.questions);  // debug check
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
         <!-----------------------services-------------------->
 <div id="services">
     <div class="container">
@@ -134,10 +163,9 @@
 
 <!---------------------contact  -------------->
  <!-- THis will make contact section from contact_section.html  just minimizing the code redundancy-->
-    {% include 'partials/contact_section.html' %} 
+    {% include 'partials/contact_section.html' %}  
 
-    
-    
- 
+
+
 {% endblock %}
 
