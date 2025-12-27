@@ -1,0 +1,12 @@
+<h2>My Kaggle Notebooks</h2>
+{% for nb in notebooks %}
+    <h3>{{ nb.title }} </h3>
+
+    <iframe
+    src="{{ nb.url }}/embed"
+    width="100%"
+    height="500"
+    frameborder="0">
+  </iframe>
+   
+{% endfor %}

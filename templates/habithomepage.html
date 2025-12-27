@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Habit Tracker
+        </title>
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100;
+            }
+            th, td {
+                border: 1px solid #444;
+                position:relative;
+            }
+            th {
+                background : #f2f2f2;
+            }
+
+            select, textarea {
+                width:100%;
+                margin-top:4px;
+            }
+            textarea {
+                height : 45px;
+            }
+            
+
+            /* Floating action menu */
+            .cell-menu {
+            display: none;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #fff;
+            border: 1px solid #aaa;
+            z-index: 10;
+            }
+            .cell-menu button {
+            display: block;
+            width: 100%;
+            border: none;
+            background: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            }
+            .cell-menu button:hover {
+            background: #eee;
+            }
+
+            .nav-controls{
+                display : flex;
+                justify-content:space-between;
+                margin-bottom: 10px;
+            }
+            .head-controls{
+                display : flex;
+                justify-content:space-between;
+                margin-bottom: 10px;
+                margin-left: 20px;
+                margin-right:20px;
+            }
+            .login{
+                margin:100px;
+            }
+            head-admin{
+                display: grid;
+            }
+        </style>
+        <script src="code.jquery.com"></script>
+
+    </head>
+    <body>
+        <div class = "head-controls">  
+        <div>
+            <h1>
+            Habit Tracker
+        </h1>
+        </div>
+        <div id = head-admin>
+            <form action = '/login'>
+            
+            <h3>Hi, {{ username }} </h3>
+            <h5>{{ email }}</h5>
+            <button  id  = 'actionlogin ' name = 'actionlogin' >Login</button>
+            <p>Status: <span id="statusMessage">Waiting...</span></p>
+            </form>
+        
+        
+        </div>      
+        
+        </div>
+
+        <div class="nav-controls">
+            <div>
+                <button onclick="changeWeek(-1)"> 👈 Previouos Week</button>
+                <button onclick="changeWeek(1)"> 👉 Next Week</button>
+            </div>
+
+            <div>
+                <button onclick="addDay()">🗽 New Day</button>
+                <button onclick="addWeek()">🗓️ New Week</button>
+            </div>
+        </div>
+
+        <form>
+            <table id = "trackerTable">
+                <thead>
+                    <tr id = "dateRow">
+                        <th>Activity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                    <tr>
+                        <th>{{ activity }}</th>
+                        
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+
+            <br>
+            <button type = "submit" onclick = saveChanges() > Save All</button>
+        </form>
+
+        <script>
+            // converting python list to javascript readable format, Json is that bridge
+
+            activities = JSON.parse('{{ activities | tojson | safe }}');
+            totalweekdata = JSON.parse(' {{ totalweekdata | tojson | safe }}');
+            console.log("Activities:", activities);
+
+            const table = document.getElementById("trackerTable");
+            const headerRow = document.getElementById("dateRow");
+            const bodyRows = table.querySelectorAll("tbody tr");
+
+
+            // tracks current time Sun Dec 14 2025 6:38:32 GMT-0600 
+            let startDate = new Date();
+
+            const changedData = {};
+
+            function markChanged(activity, dayIndex, field, value, day) {
+                if (!changedData[activity]) changedData[activity] = {};
+                if (!changedData[activity][dayIndex]) changedData[activity][dayIndex] = {};
+
+                changedData[activity][dayIndex][field] = value;
+                }
+
+            function saveChanges() {
+                fetch("/submitTracker", {
+                    method: "POST",
+                    headers: {
+                    "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                    start_date: startDate.toISOString().split("T")[0],
+                    changes: changedData
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert("Saved!");
+                    Object.keys(changedData).forEach(k => delete changedData[k]);
+                });
+                }
+
+            function renderWeek(days = 7) {
+                // clear old colums
+                // headerrow
+                headerRow.innerHTML = "<th>Activity</th>";
+                bodyRows.forEach(row => {
+                    const activityName = row.children[0].textContent;
+                    row.innerHTML = `<th>${activityName}</th>`;
+                });
+                
+                // looping through days
+                for (let i = -3; i<days-3; i++ ){
+                    const date = new Date(startDate);
+                    date.setDate(startDate.getDate() + i);
+
+                    // Header Cell
+                    const th = document.createElement("th");
+                    date_for = date.toLocaleDateString("en-US", {
+                        weekday: "short",
+                        day : "2-digit",
+                        month: "short"
+                    });
+                    th.textContent = date_for;
+                    th.onclick = () => showMenu(th);
+                    headerRow.appendChild(th);
+
+            // Body cells
+        bodyRows.forEach((row, idx) => {
+
+
+            const td = document.createElement("td");
+
+            // Adding Listerners event
+            // Select area
+            const select = document.createElement("select");
+            [
+                {v: "-", t:"✋🏻 No Work"},
+                { v: "✔", t: "✅ Done" },
+                { v: "✖", t: "❌ Not Done" },
+                { v: "~", t: "🤙 Continue" }
+            ].forEach(optData => {
+                const opt = document.createElement("option");
+                opt.value = optData.v;
+                opt.textContent = optData.t;
+                select.appendChild(opt);
+            })
+
+            // Text Area
+            const textarea = document.createElement("textarea")
+            // console.log("THis is test log")
+            // console.log(row)
+
+            // status data and note that come from database is managed here
+            // ---- DATABASE DATA INJECTION ----
+            const dayData = totalweekdata[i + 4]; // aligns with backend range
+
+            if (dayData && dayData.habits) {
+                const habitName = activities[idx];
+                const habitData = dayData.habits[habitName];
+                
+                if (habitData) {
+                    console.log(habitData)
+                    // Set select value (NOT appendChild)
+                    select.value = habitData.status || "-";
+
+                    // Set textarea value
+                    textarea.value = habitData.note || "";
+                }
+            }
+            // end of plotting the data from database
+
+            select.onchange = () => {
+            markChanged( activities[idx] , i , "status" , select.value , date)
+            }
+
+            textarea.oninput = () => {
+            markChanged(activities[idx] , i, "note" , textarea.value, date )
+            }
+            
+
+
+            
+
+            // Cell menu
+            const menu = document.createElement("div");
+            menu.className = "cell-menu";
+
+            const saveBtn = document.createElement("button");
+            saveBtn.textContent = "Save";
+            saveBtn.onclick = (e) => saveCell(e);
+
+            const updateBtn = document.createElement("button");
+            updateBtn.textContent = "Update";
+            updateBtn.onclick = (e) => updateCell(e);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.onclick = (e) => deleteCell(e);
+            
+            menu.append(saveBtn, updateBtn, deleteBtn);
+
+            
+            // Append data to ceach table data cell
+            td.append(select , textarea , menu);
+            td.onclick = (e) => showMenu(td , e);
+            row.appendChild(td);
+        
+
+      });
+       
+    }
+   
+
+  }
+
+
+            function showMenu(cell, event){
+                if (event) event.stopPropagation();
+                document.querySelecorAll(".cell-menu").forEach(m => m.style.display = "none");
+                const menu = cell.querySelector(".cell-menu");
+                if (menu) menu.style.display = "block";
+            }
+
+            document.body.onclick = () => {
+                document.querySelectorAll(".cell-menu").forEach(m => m.style.display = "none");                
+            };
+
+            function updateCell(e) {
+                e.stopPropagation();
+                alert("Update cell");
+            }
+
+            function deleteCell(e){
+                e.stopPropagation();
+                const td = e.target.closet("td");
+                td.querySelector("select").value = "-";
+                td.querySelector("textarea").value = "";
+                alert("Delete Cell")
+            }
+
+            function changeWeek(offset) {
+                startDate.setDate(startDate.getDate() + offset *7);
+                renderWeek();
+            }
+
+            function addDay() {
+                renderWeek(headerRow.children.length );
+            }
+
+            function addWeek() {
+                renderWeek(headerRow.children.length + 7)
+            }
+
+            
+            // Initial render
+            renderWeek();
+
+
+            
+        
+        </script>
+
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<Doctype.html>
+    <html>
+        <head>
+            <title>
+                Enter Code
+            </title>
+        </head>
+        <body>
+            <h2>Habit Tracker</h2>
+            <h4>Login Page</h4>
+
+            <form id="code" action = '/entercode' method = "POST">
+                <input type="text" name="enteredcode" placeholder="123456" required>               
+                <button type="submit" class="btn">Submit</button>
+                
+            </form>
+            <div class = "container">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Holy Buddy!</strong> You should check in on some emails.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class = container>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        {{ message }}
+                        {% endfor %}
+                    {% endif %}
+
+                {% endwith %}
+
+            </div>
+
+<script>
+  // Initialize and show all toasts
+  var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+  var toastList = toastElList.map(function(toastEl) {
+    return new bootstrap.Toast(toastEl).show()
+  })
+</script>
+
+        </body>
+
+
+    </html>
+</Doctype.html>

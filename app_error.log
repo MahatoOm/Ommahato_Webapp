@@ -7,3 +7,5 @@
 2025-08-12 19:36:38,671- CRITICAL: Could not connect to MongoDB : bad auth : authentication failed, full error: {'ok': 0, 'errmsg': 'bad auth : authentication failed', 'code': 8000, 'codeName': 'AtlasError'} [in /Users/omprakashmahato/Documents/flask/ommahato_webapp/app.py:43]
 2025-08-12 19:38:02,454- CRITICAL: Could not connect to MongoDB : bad auth : authentication failed, full error: {'ok': 0, 'errmsg': 'bad auth : authentication failed', 'code': 8000, 'codeName': 'AtlasError'} [in /Users/omprakashmahato/Documents/flask/ommahato_webapp/app.py:43]
 2025-08-12 19:39:44,284- CRITICAL: Could not connect to MongoDB : bad auth : authentication failed, full error: {'ok': 0, 'errmsg': 'bad auth : authentication failed', 'code': 8000, 'codeName': 'AtlasError'} [in /Users/omprakashmahato/Documents/flask/ommahato_webapp/app.py:43]
+
+
