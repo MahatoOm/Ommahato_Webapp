@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-mongo_URI = os.getenv("MONGODB_URI")
+mongo_URI = os.getenv("MONGO_URI")
 
 
 try:
@@ -24,7 +24,7 @@ except Exception as e:
     raise ConnectionError(f"Failed to connect to MongoDB: {e}")
 
 db = client.HabitTracker
-collection = db.habit_tracker
+collection = db.habitTracker
 
 def save_habit(username, email ,habit, upload_date ,event_date , data):
 
@@ -34,9 +34,8 @@ def save_habit(username, email ,habit, upload_date ,event_date , data):
             "username": username,
             "habit" : habit,
             "date" : event_date,
-            "upload_date": upload_date,
+            "upload_date": upload_date.isoformat()
         },
-        
         {
             "$set" : {
                 "data" : data,

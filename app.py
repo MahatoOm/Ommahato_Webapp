@@ -70,26 +70,7 @@ db = client["contactdb"]  # Database name
 contacts = db["contacts"] # Collection name
 
 
-# Fetch the Notebooks 
-from kaggle.api.kaggle_api_extended import KaggleApi
 
-
-api = KaggleApi()
-api.authenticate()
-
-kernels_list = api.kernels_list(user = "mahatoom")
-print(kernels_list)
-# print(kernels_list)
-
-notebooks = []
-for k in kernels_list:
-    # if k.author == userName:
-    notebooks.append({
-        "title": k.title,
-        "url": f"https://www.kaggle.com/code/{k.author}/{k.title}"
-    })
-print(notebooks)
-print("gvdfjhsbkal")
 
 @app.route('/')
 def homepage():
@@ -236,11 +217,6 @@ def generate_response(data):
 
 
 
-@app.route("/kaggle")
-def kaggle():
-    return render_template("kaggle.html", notebooks = notebooks)
-
-
 
 
 # Habit Tracker
@@ -292,7 +268,7 @@ def habitTracker(username, email):
 def habit():
     # print("THE HABIT IS CALLED")
 
-    global data, start_date
+    global username , email ,data, start_date
     
     payload = request.get_json()
     start_date = payload["start_date"]
@@ -383,9 +359,38 @@ def code():
         return render_template("entercode.html")
 
 
+# Fetch the Notebooks 
+from kaggle.api.kaggle_api_extended import KaggleApi
+@app.route("/kaggleNotebook" , methods =[ "POST", "GET"])
+def kaggle():
 
+    kaggle_api = os.getenv("KAGGLE_API_TOKEN")
+    api = KaggleApi()
+    api.authenticate()
 
+    kernels_list = api.kernels_list(user = os.getenv("KAGGLE_USERNAME"))
+    print(kernels_list)
+    # print(kernels_list)
 
+    notebooks = []
+    for k in kernels_list:
+        # if k.author == userName:
+        notebooks.append({
+            "title": k.title,
+            "url": f"https://www.kaggle.com/code/{k.author}/{k.title}"
+        })
+
+    return render_template("kaggle.html", notebooks = notebooks)
+# print(notebooks)
+# print("gvdfjhsbkal")
+
+@app.route("/projectCalculus2", methods =[ "POST", "GET"])
+def Calculus():
+    return render_template("calculus2.html")
+
+@app.route("/visLearn")
+def vislearn():
+    return render_template("vislearn.html",methods =[ "POST", "GET"])
 
 
 if __name__ == '__main__' :
