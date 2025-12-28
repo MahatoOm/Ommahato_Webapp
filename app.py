@@ -234,7 +234,6 @@ def habitTracker(username, email):
     
     # print(username, email)
     list_item = ["Assignment" , "Work" , "Physical Exercise", "Project1", "Project2" ,"Today's learning", "A good thing", "A bad thing", "Note"]
-
     
     todays_date = date.today()
     totalweek = []
@@ -301,6 +300,7 @@ def save_cell(username ,email, changes , startdate):
         for afterdate , value2 in value1.items():
             # print("om", habit, startdate + timedelta( int(afterdate)) , value2)
             upload_data(username ,email, habit,  startdate , str(startdate + timedelta(int(afterdate))) , value2)
+
     return 
 
 def upload_data(username ,email , habit, upload_date ,event_date, data):
@@ -311,22 +311,28 @@ def upload_data(username ,email , habit, upload_date ,event_date, data):
 
 
 import user
+import traceback
+
 @app.route('/login' , methods = ['POST', 'GET'])
 def login():
     global username, email
-    if request.method == "POST":
-        username = request.form["Name"]
-        email = request.form['Email']
-        # print(username, email)
-        key_value = user.userlogin(email)
-        global key
-        key = key_value
-        print(key, "in login")
-        print(type(key))
-        # print(keys)
-        return render_template("entercode.html" )
-    else:
-        return render_template("login.html")
+    try:
+        if request.method == "POST":
+            username = request.form.get["Name"]
+            email = request.form.get['Email']
+            # print(username, email)
+            key_value = user.userlogin(email)
+            global key
+            key = key_value
+            print(key, "in login")
+            print(type(key))
+            # print(keys)
+            return render_template("entercode.html" )
+        else:
+            return render_template("login.html")
+    except Exception as e:
+        print(traceback.format_exc())  # 👈 shows error in Render logs
+        return "Server error", 500
 
 
 @app.route('/entercode' , methods = ['POST', 'GET'])
