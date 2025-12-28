@@ -322,7 +322,7 @@ def login():
         if request.method == "POST":
             username = request.form.get("Name")
             email = request.form.get('Email')
-            # print(username, email)
+            print(username, email)
 
             key_val = random.randint(100000, 999999)
             time = datetime.utcnow()
@@ -331,15 +331,15 @@ def login():
             threading.Thread(
                 target = user.userlogin,
                 args = (email, key_val, time),
-                daemonn =True
+                daemon =True
             ).start()
 
             global key
             key = key_val
-            
-            # print(key, "in login")
-            # print(type(key))
-            # print(keys)
+
+            print(key, "in login")
+            print(type(key))
+            print(keys)
             return render_template("entercode.html" )
         else:
             return render_template("login.html")
@@ -361,7 +361,7 @@ def code():
             database.add_user(username, email)
             # print(username)
             # print(key)
-            flash("Account created Sucessfully.")
+            # flash("Account created Sucessfully.")
 
             if data:
                 print(data  , " in the code function.")
