@@ -322,21 +322,20 @@ def login():
         if request.method == "POST":
             username = request.form.get("Name")
             email = request.form.get('Email')
-            print(username, email)
+            # print(username, email)
 
             key_val = random.randint(100000, 999999)
-            time = datetime.utcnow()
+            time = datetime.utcnow().isoformat()
 
+    # THreading is used to run send email asynchonocolly
 
             threading.Thread(
-                target = user.userlogin,
+                target = user.resend_user_email,
                 args = (email, key_val, time),
                 daemon =True
             ).start()
 
-            global key
             key = key_val
-
             print(key, "in login")
             print(type(key))
             print(keys)
@@ -346,6 +345,7 @@ def login():
     except Exception as e:
         print(traceback.format_exc())  # 👈 shows error in Render logs
         return "Server error", 500
+
 
 
 @app.route('/entercode' , methods = ['POST', 'GET'])
