@@ -312,20 +312,33 @@ def upload_data(username ,email , habit, upload_date ,event_date, data):
 
 import user
 import traceback
-
+import threading
+import random
 @app.route('/login' , methods = ['POST', 'GET'])
 def login():
-    global username, email
+    global username, email, key
+
     try:
         if request.method == "POST":
             username = request.form.get("Name")
             email = request.form.get('Email')
             # print(username, email)
-            key_value = user.userlogin(email)
+
+            key_val = random.randint(100000, 999999)
+            time = datetime.utcnow()
+
+
+            threading.Thread(
+                target = user.userlogin,
+                args = (email, key_val, time),
+                daemonn =True
+            ).start()
+
             global key
-            key = key_value
-            print(key, "in login")
-            print(type(key))
+            key = key_val
+            
+            # print(key, "in login")
+            # print(type(key))
             # print(keys)
             return render_template("entercode.html" )
         else:

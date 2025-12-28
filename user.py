@@ -7,9 +7,7 @@ from datetime import datetime
 import os
 import random
 
-def userlogin(email):
-    key  = random.randint(100000, 999999 )
-    time = datetime.utcnow()
+def userlogin(email, key , time):
 
     msg = MIMEText(f"HabitTracker login service code : {key} \n This event requested at {time}. \n If you didn't request this code, please email to: \nadmin@ommahato.com ")
     msg['Subject'] = "HabitTracker Code"
@@ -21,10 +19,7 @@ def userlogin(email):
         server.starttls()
         server.login(os.getenv("EMAILZOHO"), os.getenv("PWZOHO"))
         server.send_message(msg)
-
-    return key
              
-
     
 def key_value(key = 000000):
     return key
