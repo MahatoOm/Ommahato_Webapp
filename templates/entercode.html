@@ -33,13 +33,13 @@
 
             </div>
 
-<script>
-  // Initialize and show all toasts
+<!-- <script>
   var toastElList = [].slice.call(document.querySelectorAll('.toast'))
   var toastList = toastElList.map(function(toastEl) {
-    return new bootstrap.Toast(toastEl).show()
+    return bootstrap.Toast.getOrCreateInstance(toastEl).show()
   })
-</script>
+</script> -->
+
 
         </body>
 
