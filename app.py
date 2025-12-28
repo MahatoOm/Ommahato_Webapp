@@ -318,8 +318,8 @@ def login():
     global username, email
     try:
         if request.method == "POST":
-            username = request.form.get["Name"]
-            email = request.form.get['Email']
+            username = request.form.get("Name")
+            email = request.form.get('Email')
             # print(username, email)
             key_value = user.userlogin(email)
             global key
