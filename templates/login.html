@@ -10,12 +10,15 @@
             <h4>Login Page</h4>
 
             <form id="login" action = '/login' method = 'POST' >
-                <input type="text" name="Name" placeholder="Username" required>
-                
-                <input type="email" name="Email" placeholder="Your Email" required>
+                <textbox type = "text" >Usename: </textbox>
+                <input type="text" name="Name" placeholder="Username"></br></br>
+
+                <textbox type = "text" >Email: </textbox>
+                <input type="email" name="Email" placeholder="Your Email" required><textbox type = "text" > *</textbox></br></br>
+                <textbox type = "text" >Password: </textbox>
+                <input type="password" name="Password" placeholder="*********" required><textbox type = "text" > *</textbox></br></br>
                 
                 <button type="submit" class="btn">Submit</button>
-                
             </form>
         </body>
     </html>

@@ -54,6 +54,7 @@
                 justify-content:space-between;
                 margin-bottom: 10px;
             }
+
             .head-controls{
                 display : flex;
                 justify-content:space-between;
@@ -83,8 +84,10 @@
             
             <h3>Hi, {{ username }} </h3>
             <h5>{{ email }}</h5>
-            <button  id  = 'actionlogin ' name = 'actionlogin' >Login</button>
+            {% if username == "Friend"  or username == None %}
+            <button id='actionlogin' name='actionlogin'>Login/Sign Up</button>
             <p>Status: <span id="statusMessage">Waiting...</span></p>
+            {% endif %}    
             </form>
         
         
@@ -99,7 +102,9 @@
             </div>
 
             <div>
+                
                 <button onclick="addDay()">🗽 New Day</button>
+                <button onclick="previousWeek()">🗽 Previous Week</button>
                 <button onclick="addWeek()">🗓️ New Week</button>
             </div>
         </div>
@@ -123,7 +128,7 @@
             </table>
 
             <br>
-            <button type = "submit" onclick = saveChanges() > Save All</button>
+            <button onclick = saveChanges() > Save All</button>
         </form>
 
         <script>
@@ -137,21 +142,32 @@
             const headerRow = document.getElementById("dateRow");
             const bodyRows = table.querySelectorAll("tbody tr");
 
-
             // tracks current time Sun Dec 14 2025 6:38:32 GMT-0600 
             let startDate = new Date();
+            startDate.setDate(startDate.getDate() - 3);
+            let endDate = new Date();
+            endDate.setDate(startDate.getDate() +7);
+            let day = 7;
+
 
             const changedData = {};
-
-            function markChanged(activity, dayIndex, field, value, day) {
+            function markChanged(activity, dayIndex, field, value, chdate) {
+                change_date = chdate.getFullYear() + "-" +
+                        String(chdate.getMonth() + 1).padStart(2, "0") + "-" +
+                        String(chdate.getDate()).padStart(2, "0");
                 if (!changedData[activity]) changedData[activity] = {};
-                if (!changedData[activity][dayIndex]) changedData[activity][dayIndex] = {};
+                if (!changedData[activity][change_date]) changedData[activity][change_date] = {};
 
-                changedData[activity][dayIndex][field] = value;
+                changedData[activity][change_date][field] = value;
+                console.log(changedData)
+                console.log(typeof changedData)
                 }
 
-            function saveChanges() {
-                fetch("/submitTracker", {
+            async function saveChanges() {
+                console.log( "Changes ")
+
+
+                data = await fetch("/submitTracker", {
                     method: "POST",
                     headers: {
                     "Content-Type": "application/json"
@@ -161,24 +177,34 @@
                     changes: changedData
                     })
                 })
-                .then(res => res.json())
-                .then(data => {
-                    alert("Saved!");
-                    Object.keys(changedData).forEach(k => delete changedData[k]);
-                });
-                }
 
-            function renderWeek(days = 7) {
+
+
+
+
+
+                // .then(res => res.json())
+                // .then(data => {
+                //     alert("Saved!");
+                //     Object.keys(changedData).forEach(k => delete changedData[k]);
+                // });
+                }
+            
+            function renderWeek(days = 7 , movement = 1) {
                 // clear old colums
                 // headerrow
+                
                 headerRow.innerHTML = "<th>Activity</th>";
                 bodyRows.forEach(row => {
                     const activityName = row.children[0].textContent;
                     row.innerHTML = `<th>${activityName}</th>`;
                 });
+
+                console.log(startDate , " indside the function")
+                
                 
                 // looping through days
-                for (let i = -3; i<days-3; i++ ){
+                for ( i=0 ; i<days; i++ ){
                     const date = new Date(startDate);
                     date.setDate(startDate.getDate() + i);
 
@@ -192,90 +218,87 @@
                     th.textContent = date_for;
                     th.onclick = () => showMenu(th);
                     headerRow.appendChild(th);
+                    
+                    // console.log("todays date: ", date)
+                // Body cells
+                bodyRows.forEach((row, idx) => {
+                    const td = document.createElement("td");
 
-            // Body cells
-        bodyRows.forEach((row, idx) => {
+                    // Adding Listerners event
+                    // Select area
+                    const select = document.createElement("select");
+                    [
+                        {v: "-", t:"✋🏻 No Work"},
+                        { v: "✔", t: "✅ Done" },
+                        { v: "✖", t: "❌ Not Done" },
+                        { v: "~", t: "🤙 Continue" }
+                    ].forEach(optData => {
+                        const opt = document.createElement("option");
+                        opt.value = optData.v;
+                        opt.textContent = optData.t;
+                        select.appendChild(opt);
+                    })
 
+                    // Text Area
+                    const textarea = document.createElement("textarea")
+                    // console.log(row)
 
-            const td = document.createElement("td");
+                    // status data and note that come from database is managed here
+                    // ---- DATABASE DATA INJECTION ----
 
-            // Adding Listerners event
-            // Select area
-            const select = document.createElement("select");
-            [
-                {v: "-", t:"✋🏻 No Work"},
-                { v: "✔", t: "✅ Done" },
-                { v: "✖", t: "❌ Not Done" },
-                { v: "~", t: "🤙 Continue" }
-            ].forEach(optData => {
-                const opt = document.createElement("option");
-                opt.value = optData.v;
-                opt.textContent = optData.t;
-                select.appendChild(opt);
-            })
+                    const dayData = totalweekdata[i ]; // aligns with backend range
 
-            // Text Area
-            const textarea = document.createElement("textarea")
-            // console.log("THis is test log")
-            // console.log(row)
+                    if (dayData && dayData.habits) {
+                        const habitName = activities[idx];
+                        const habitData = dayData.habits[habitName];
+                        
+                        if (habitData) {
+                            console.log(habitData)
+                            // Set select value (NOT appendChild)
+                            select.value = habitData.status || "-";
 
-            // status data and note that come from database is managed here
-            // ---- DATABASE DATA INJECTION ----
-            const dayData = totalweekdata[i + 4]; // aligns with backend range
+                            // Set textarea value
+                            textarea.value = habitData.note || "";
+                        }
+                    }
+                    // end of plotting the data from database
 
-            if (dayData && dayData.habits) {
-                const habitName = activities[idx];
-                const habitData = dayData.habits[habitName];
+                    select.onchange = () => {
+                    // console.log( activities[idx] , i , "status" , select.value , date )
+                    markChanged( activities[idx] , i , "status" , select.value , date)
+                    }
+
+                    textarea.oninput = () => {
+                    // console.log(activities[idx] , i, "note" , textarea.value, date)
+                    markChanged(activities[idx] , i, "note" , textarea.value, date)
+                    }
+                    
+                    
+
+                    // Cell menu
+                    const menu = document.createElement("div");
+                    // menu.className = "cell-menu";
+
+                    // const saveBtn = document.createElement("button");
+                    // saveBtn.textContent = "Save";
+                    // saveBtn.onclick = (e) => saveCell(e);
+
+                    // const updateBtn = document.createElement("button");
+                    // updateBtn.textContent = "Update";
+                    // updateBtn.onclick = (e) => updateCell(e);
+
+                    // const deleteBtn = document.createElement("button");
+                    // deleteBtn.textContent = "Delete";
+                    // deleteBtn.onclick = (e) => deleteCell(e);
+                    
+                    // menu.append(saveBtn, updateBtn, deleteBtn);                    
+                    // Append data to ceach table data cell
+                    td.append(select , textarea , menu);
+                    td.onclick = (e) => showMenu(td , e);
+                    row.appendChild(td);
                 
-                if (habitData) {
-                    console.log(habitData)
-                    // Set select value (NOT appendChild)
-                    select.value = habitData.status || "-";
 
-                    // Set textarea value
-                    textarea.value = habitData.note || "";
-                }
-            }
-            // end of plotting the data from database
-
-            select.onchange = () => {
-            markChanged( activities[idx] , i , "status" , select.value , date)
-            }
-
-            textarea.oninput = () => {
-            markChanged(activities[idx] , i, "note" , textarea.value, date )
-            }
-            
-
-
-            
-
-            // Cell menu
-            const menu = document.createElement("div");
-            menu.className = "cell-menu";
-
-            const saveBtn = document.createElement("button");
-            saveBtn.textContent = "Save";
-            saveBtn.onclick = (e) => saveCell(e);
-
-            const updateBtn = document.createElement("button");
-            updateBtn.textContent = "Update";
-            updateBtn.onclick = (e) => updateCell(e);
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
-            deleteBtn.onclick = (e) => deleteCell(e);
-            
-            menu.append(saveBtn, updateBtn, deleteBtn);
-
-            
-            // Append data to ceach table data cell
-            td.append(select , textarea , menu);
-            td.onclick = (e) => showMenu(td , e);
-            row.appendChild(td);
-        
-
-      });
+            });
        
     }
    
@@ -285,7 +308,7 @@
 
             function showMenu(cell, event){
                 if (event) event.stopPropagation();
-                document.querySelecorAll(".cell-menu").forEach(m => m.style.display = "none");
+                document.querySelectorAll(".cell-menu").forEach(m => m.style.display = "none");
                 const menu = cell.querySelector(".cell-menu");
                 if (menu) menu.style.display = "block";
             }
@@ -312,15 +335,53 @@
                 renderWeek();
             }
 
-            function addDay() {
-                renderWeek(headerRow.children.length );
+            async function addDay() {
+                day = day +1; 
+                endDate.setDate(endDate.getDate() + 1);
+                const response = await fetch(`/retrieve_data?start=${startDate.toISOString()}&end=${endDate.toISOString()}&day=${day}`);
+                const updateddata = await response.json();
+                console.log(updateddata)
+
+                totalweekdata = updateddata
+                renderWeek(headerRow.children.length  );
             }
 
-            function addWeek() {
-                renderWeek(headerRow.children.length + 7)
+            async function addWeek() {
+                day =  7;
+                startDate.setDate(startDate.getDate() + 7);
+                endDate.setDate(endDate.getDate() + 7);
+
+                const response = await fetch(`/week_data?start=${startDate.toISOString()}&end=${endDate.toISOString()}&day=${day}&movement=${1}`);
+                const updatedweekdata = await response.json();
+                console.log(startDate, endDate)
+                // console.log(updatedweekdata)
+
+                totalweekdata = updatedweekdata
+                console.log(totalweekdata)
+                console.log(updatedweekdata)
+                renderWeek(day , 1)
+
             }
 
-            
+            async function previousWeek() {
+                day = 7;
+                startDate.setDate(startDate.getDate() - 7);
+                endDate.setDate(endDate.getDate() - 7);
+
+                const response = await fetch(`/week_data?start=${startDate.toISOString()}&end=${endDate.toISOString()}&day=${day}&movement=${-1}`);
+
+                const updatedweekdata = await response.json();
+                // console.log(updateddata)
+                console.log(startDate, endDate)
+
+                totalweekdata = updatedweekdata
+                console.log(totalweekdata)
+                console.log(updatedweekdata)
+                console.log(headerRow.children.length)
+                renderWeek(day, -1)
+
+            }
+
             // Initial render
             renderWeek();
 

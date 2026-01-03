@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect, flash
+from flask import Flask, render_template, request, url_for, redirect, flash, jsonify, session
 import logging
 
 from openai import OpenAI
@@ -16,12 +16,14 @@ from datetime import datetime , timedelta , date
 import database as database
 import time
 
+
 # load .env variables that we stored cluter string from mongodv in .env 
 load_dotenv()
 
 app = Flask(__name__)
 # for flashing notification and mongodb server
 app.secret_key = os.getenv("SECRET_KEY", "default_secret")
+app.permanent_session_lifetime = timedelta(days=7)
 
 
 # for generating sitemap (sitemap.xml) for google search console
@@ -31,8 +33,6 @@ ext = Sitemap(app=app)
 # if If your actual site and backend are on different domains, Flask needs flask-cors so browsers allow the request.
 from flask_cors import CORS
 CORS(app)
-
-
 # configure logging
 # for production, consider writing to a file or an external logging service
 
@@ -68,8 +68,6 @@ except Exception as e:
 
 db = client["contactdb"]  # Database name
 contacts = db["contacts"] # Collection name
-
-
 
 
 @app.route('/')
@@ -120,7 +118,7 @@ def homepage():
         }
     ]
     return render_template('index.html', data = data)
-    # return "our site is live"
+    
 
     
 
@@ -227,21 +225,35 @@ email = ''
 keys =[]
 data = {}
 start_date = ''
+list_item =[]
+
+@app.route("/projectHabitTracker")
+def projecthabittracker():
+    if session.get("email") or email:
+        return redirect(url_for("habitTracker"))
+    return render_template("login.html")
 
 @app.route("/habitTracker", defaults={"username": "Friend", "email": ""})
-@app.route("/habitTracker/<username>/<email>")
-def habitTracker(username, email):
-    
+@app.route("/habitTracker")
+def habitTracker():
+    username = session.get("username")
+    email = session.get("email")
+    print(session["username"])
+    print(session["email"])
+
     # print(username, email)
-    list_item = ["Assignment" , "Work" , "Physical Exercise", "Project1", "Project2" ,"Today's learning", "A good thing", "A bad thing", "Note"]
-    
+
+    global list_item
+    list_item = ["Assignment" , "Work" , "Physical Exercise", "Project1", "Project2" ,"Today's learning", "A good thing", "A bad thing", "Note"]    
     todays_date = date.today()
     totalweek = []
     # print("in tracker",username, email)
+    last_date = todays_date 
+    if session["email"] != "":
+        for i in range(-3,4):
 
-    if email != "":
-        for i in range(4, -1, -1):
-            day = str(todays_date - timedelta(i))
+            day = str(last_date + timedelta(i))
+
             docs = database.find_by_date(email, day)
 
             day_data = {}
@@ -256,8 +268,12 @@ def habitTracker(username, email):
                 "date": day,
                 "habits": day_data
             })
-    # print(username, email)
-    # print(totalweek)
+            
+    # global username, email
+    # username = session["usernam"]
+    # email = session["emai"]
+    print("username start page",username, email)
+    print(totalweek)
     return render_template("habithomepage.html", activities = list_item , totalweekdata = totalweek, username = username, email = email)
  
 
@@ -265,32 +281,32 @@ def habitTracker(username, email):
 
 @app.route("/submitTracker", methods = ["POST", "GET" ])
 def habit():
-    # print("THE HABIT IS CALLED")
+    print("THE HABIT IS CALLED")
 
-    global username , email ,data, start_date
+    global data, start_date
     
     payload = request.get_json()
     start_date = payload["start_date"]
     changes = payload["changes"]
-    # print(start_date)
-    # print(changes)
+
+    print(start_date)
+    print(changes)
 
     date_format = '%Y-%m-%d'
     start_date  = datetime.strptime(start_date , date_format).date()
-
     data = changes
+    print("Log of a day " , data , session["email"])
 
-    print("Log of a day " , data , email)
-
-    print(email )
-    print(email  == "")
-    if   email == '' :
+    # print(email )
+    # print(email  == "")
+    if   session["email"] == '' :
         
         return render_template('login.html')
     
     else:
-        save_cell(username ,email, changes , start_date)    
-    return redirect(url_for('habitTracker' , username = username ,email = email))
+        save_cell(session["username"] ,session["email"], changes , start_date)    
+        print(session["username"] ,session["email"], changes , start_date)
+    return redirect(url_for('habitTracker' , username = session["username"] ,email = session["email"]))
 
 
 def save_cell(username ,email, changes , startdate):
@@ -298,8 +314,8 @@ def save_cell(username ,email, changes , startdate):
     for habit, value1 in changes.items():
 
         for afterdate , value2 in value1.items():
-            # print("om", habit, startdate + timedelta( int(afterdate)) , value2)
-            upload_data(username ,email, habit,  startdate , str(startdate + timedelta(int(afterdate))) , value2)
+            print(username, email, habit, startdate , afterdate , value2)
+            upload_data(username ,email, habit,  startdate , afterdate , value2)
 
     return 
 
@@ -309,37 +325,122 @@ def upload_data(username ,email , habit, upload_date ,event_date, data):
     # print(res , 'sucessfull')
     return 
 
+from datetime import datetime, timedelta
+
+@app.route('/retrieve_data', methods=['GET'])
+def retrieve_data():
+    global email, username
+    print(email, username, "username email")
+
+    start = request.args.get("start")
+    end = request.args.get("end")
+    days = int(request.args.get("day"))
+    print(start, end , days , "this is retrive function")
+    start_date = datetime.fromisoformat(start.replace("Z", ""))
+    end_date = datetime.fromisoformat(end.replace("Z", ""))
+
+    totalweek = []
+    for i in range(days, -1, -1):
+        day_str = str((end_date - timedelta(days=i)).strftime("%Y-%m-%d"))
+        print(email, username, "username email")
+
+        docs = database.find_by_date(email, day_str)
+        # print(docs)
+        print(list(docs))
+        day_data = {}
+        for d in docs:
+            day_data[d["habit"]] = {
+                "status": d["data"].get("status", ""),
+                "note": d["data"].get("note", "")
+            }
+
+        totalweek.append({
+            "date": day_str,
+            "habits": day_data
+        })
+
+    print(totalweek)
+    return jsonify(totalweek)
+
+@app.route('/week_data', methods=['GET'])
+def week_data():
+    global email, username
+    print(email,  "username email")
+
+    start = request.args.get("start")
+    end = request.args.get("end")
+    days = int(request.args.get("day"))
+    start_date = datetime.fromisoformat(start.replace("Z", ""))
+    end_date = datetime.fromisoformat(end.replace("Z", ""))
+    movement = int(request.args.get("movement"))
+    
+    # if movement == -1:
+    #     end_date = end + timedelta(-7)
+    # else:
+    #     end_date = end + timedelta(7)  
+    # print(email,  "username email")
+    print(start_date, end_date , days , "this is week function")
+
+    totalweek = []
+    for i in range(days):
+        day_str = str((start_date + timedelta(i-1)).strftime("%Y-%m-%d"))
+
+        docs = database.find_by_date(session["email"], day_str)
+        # print(docs)
+        # print(list(docs))
+        day_data = {}
+        for d in docs:
+            day_data[d["habit"]] = {
+                "status": d["data"].get("status", ""),
+                "note": d["data"].get("note", "")
+            }
+
+        totalweek.append({
+            "date": day_str,
+            "habits": day_data
+        })
+    print("total week",totalweek)
+    return jsonify(totalweek)
+
 
 import user
 import traceback
 import threading
 import random
+# session.permanent = True
+import pw
+password = ''
 @app.route('/login' , methods = ['POST', 'GET'])
 def login():
-    global username, email, key
-
+    global  key,password   
     try:
         if request.method == "POST":
-            username = request.form.get("Name")
-            email = request.form.get('Email')
+            session["username"] = request.form.get("Name")
+            session["email"] = request.form.get('Email')
+            password = request.form.get('Password')
+            print(session["email"], session["username"], password)
+            if database.find_by_email(session['email']):
+                if pw.check(session['email'], password):
+                    return redirect(url_for('habitTracker'))
+                flash("Invalid Credintials, Try again.")
+                return render_template('login.html')
             # print(username, email)
+            else:
+                key_val = random.randint(100000, 999999)
+                time = datetime.utcnow().isoformat()
 
-            key_val = random.randint(100000, 999999)
-            time = datetime.utcnow().isoformat()
+        # THreading is used to run send email asynchonocolly
 
-    # THreading is used to run send email asynchonocolly
+                threading.Thread(
+                    target = user.resend_user_email,
+                    args = (session["email"], key_val, time),
+                    daemon =True
+                ).start()
 
-            threading.Thread(
-                target = user.resend_user_email,
-                args = (email, key_val, time),
-                daemon =True
-            ).start()
-
-            key = key_val
-            print(key, "in login")
-            print(type(key))
-            print(keys)
-            return render_template("entercode.html" )
+                key = key_val
+                print(key, "in login")
+                
+                return render_template("entercode.html" )
         else:
             return render_template("login.html")
     except Exception as e:
@@ -350,25 +451,26 @@ def login():
 
 @app.route('/entercode' , methods = ['POST', 'GET'])
 def code():
-    global username, email
+    # global username, email
+    global password
     if request.method == "POST" :
         userinput = request.form['enteredcode']
         print(userinput)
         global key
-        print(key ,"in code")
-        print(type(userinput) , userinput, key)
+        # print(key ,"in code")
+        # print(type(userinput) , userinput, key)
         if int(userinput) == key:
-            database.add_user(username, email)
+            database.add_user(session["username"], session["email"], password)
             # print(username)
             # print(key)
             # flash("Account created Sucessfully.")
 
             if data:
                 print(data  , " in the code function.")
-                save_cell(username, email, data , start_date)
+                save_cell(session["username"], session["email"], data , start_date)
             time.sleep(.5)
-            print("in code",username, email)
-            return redirect(url_for('habitTracker' , username = username , email = email))
+            print("in code the session data",session["username"], session["email"])
+            return redirect(url_for('habitTracker'))
             # return habitTracker(username , email)
         
         else:
@@ -398,6 +500,7 @@ def kaggle():
             "title": k.title,
             "url": f"https://www.kaggle.com/code/{k.author}/{k.title}"
         })
+
 
     return render_template("kaggle.html", notebooks = notebooks)
 # print(notebooks)

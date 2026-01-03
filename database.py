@@ -82,18 +82,16 @@ def find_username(username):
     data = collection.find({
         "username" : username,
     })
-
     return data
 
 
-
-
 collection2 = db.userdata
-
-def add_user(username, email):
-    collection2.update_one({
+def add_user(email , password, username = "Friend" ):
+    collection2.update_one(
+        {
         'username' :username,
-        'email':email
+        'email':email,
+        'password' : password
         },
         {
             "$set" : {               
@@ -103,5 +101,13 @@ def add_user(username, email):
                 "created_at": datetime.utcnow()
             }
         },
-        upsert = True,
-    )
+        upsert = True, 
+        )
+    
+def find_by_email(email ):
+    data = collection2.find({
+        "email" :email,
+        
+    })
+    return True if data else False
+
