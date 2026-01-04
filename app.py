@@ -419,11 +419,36 @@ def login():
             session["email"] = request.form.get('Email')
             password = request.form.get('Password')
             print(session["email"], session["username"], password)
+
             if database.find_by_email(session['email']):
-                if pw.check(session['email'], password):
+                check = pw.check(session['email'], password)
+                print(check)
+                if check == True:
+                    print(True)
                     return redirect(url_for('habitTracker'))
-                flash("Invalid Credintials, Try again.")
-                return render_template('login.html')
+                elif check == False:
+                    print(check)
+                    flash("Invalid Credintials, Try again.")
+                    
+                    return render_template('login.html')
+                else:
+                    print(check)
+                    key_val = random.randint(100000, 999999)
+                    time = datetime.utcnow().isoformat()
+
+                    # THreading is used to run send email asynchonocolly
+
+                    threading.Thread(
+                        target = user.resend_user_email,
+                        args = (session["email"], key_val, time),
+                        daemon =True
+                    ).start()
+
+                    key = key_val
+                    print(key, "in login")
+
+                    return render_template("entercode.html" )
+
             # print(username, email)
             else:
                 key_val = random.randint(100000, 999999)
@@ -439,7 +464,7 @@ def login():
 
                 key = key_val
                 print(key, "in login")
-                
+                print("functiom called nothing")
                 return render_template("entercode.html" )
         else:
             return render_template("login.html")
@@ -460,7 +485,7 @@ def code():
         # print(key ,"in code")
         # print(type(userinput) , userinput, key)
         if int(userinput) == key:
-            database.add_user(session["username"], session["email"], password)
+            database.add_user(session["email"], password, session["username"])
             # print(username)
             # print(key)
             # flash("Account created Sucessfully.")
@@ -516,5 +541,4 @@ def vislearn():
 
 
 if __name__ == '__main__' :
-
     app.run(debug  = True)

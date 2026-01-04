@@ -11,8 +11,20 @@ collection2 = db.userdata
 def check(email ,pw):
 
     
-    data = collection2.find_by_email({
+    data = collection2.find({
         'email' :email,
     })
-    return data['password'] == pw
+    
+    # print(list(data))
+    for d in data:
+        print(d)
+        if "password" in d.keys():
+            print(d["password"], "password is here")
+            return d['password']  == pw
+        
+    return "nothing password detected"
 
+
+
+output = check("omprakashmahato0010@gmail.com", "asdfghjkl")
+print(output)
