@@ -26,5 +26,5 @@ def check(email ,pw):
 
 
 
-output = check("omprakashmahato0010@gmail.com", "asdfghjkl")
-print(output)
+# output = check("omprakashmahato0010@gmail.com", "asdfghjkl")
+# print(output)

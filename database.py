@@ -14,7 +14,7 @@ try:
 
     # The ping command is cheap and does not require authorization
     client.admin.command('ping')
-    print("MOngo db connected sucessfully.")
+    print("Mongo db connected sucessfully.")
     
     
 except Exception as e:

@@ -226,6 +226,7 @@ keys =[]
 data = {}
 start_date = ''
 list_item =[]
+weekdata = []
 
 @app.route("/projectHabitTracker")
 def projecthabittracker():
@@ -238,12 +239,12 @@ def projecthabittracker():
 def habitTracker():
     username = session.get("username")
     email = session.get("email")
-    print(session["username"])
-    print(session["email"])
+    # print(session["username"])
+    # print(session["email"])
 
     # print(username, email)
 
-    global list_item
+    global list_item, weekdata
     list_item = ["Assignment" , "Work" , "Physical Exercise", "Project1", "Project2" ,"Today's learning", "A good thing", "A bad thing", "Note"]    
     todays_date = date.today()
     totalweek = []
@@ -272,8 +273,9 @@ def habitTracker():
     # global username, email
     # username = session["usernam"]
     # email = session["emai"]
-    print("username start page",username, email)
-    print(totalweek)
+    # print("username start page",username, email)
+    # print(totalweek)
+    weekdata = totalweek
     return render_template("habithomepage.html", activities = list_item , totalweekdata = totalweek, username = username, email = email)
  
 
@@ -284,7 +286,6 @@ def habit():
     print("THE HABIT IS CALLED")
 
     global data, start_date
-    
     payload = request.get_json()
     start_date = payload["start_date"]
     changes = payload["changes"]
@@ -310,11 +311,49 @@ def habit():
 
 
 def save_cell(username ,email, changes , startdate):
+    global weekdata
     print("Save cell called")
     for habit, value1 in changes.items():
 
         for afterdate , value2 in value1.items():
             print(username, email, habit, startdate , afterdate , value2)
+            
+            
+            if len(value2) == 1:
+                # date1 = datetime.strptime(startdate, "%Y-%m-%d")
+                # converting
+                date2 = date.fromisoformat( afterdate )
+                
+                print(type(startdate), type(afterdate))
+                delta = date2 - startdate
+                diff_in_days = abs(delta.days)
+                print(diff_in_days)
+                if "note" in value2.keys():
+                    dayData = weekdata[diff_in_days]
+                    hab = dayData['habits']
+                    print(dayData , "daydata")
+                    if habit in hab:
+                        kit = hab[habit]
+                        if "status" in kit.keys():
+                            print("inside1")
+                            habi = hab[habit]
+                            print(habi , ' habit')
+                            value2["status"] = habi["status"]
+
+                else:
+                    dayData = weekdata[diff_in_days]
+                    hab = dayData['habits']
+                    if habit in hab:
+                        kit = hab[habit]
+                        if "note" in hab[habit].keys():
+                            print("inside2")
+                            habi = hab[habit]
+                            value2["note"] = habi["note"]
+                        
+                print(afterdate)
+                print(value2)
+
+
             upload_data(username ,email, habit,  startdate , afterdate , value2)
 
     return 
@@ -335,14 +374,14 @@ def retrieve_data():
     start = request.args.get("start")
     end = request.args.get("end")
     days = int(request.args.get("day"))
-    print(start, end , days , "this is retrive function")
+    # print(start, end , days , "this is retrive function")
     start_date = datetime.fromisoformat(start.replace("Z", ""))
     end_date = datetime.fromisoformat(end.replace("Z", ""))
 
     totalweek = []
     for i in range(days, -1, -1):
         day_str = str((end_date - timedelta(days=i)).strftime("%Y-%m-%d"))
-        print(email, username, "username email")
+        # print(email, username, "username email")
 
         docs = database.find_by_date(email, day_str)
         # print(docs)
@@ -539,6 +578,9 @@ def Calculus():
 def vislearn():
     return render_template("vislearn.html",methods =[ "POST", "GET"])
 
+@app.route("/recording")
+def record():
+    return render_template("recording.html")
 
 if __name__ == '__main__' :
     app.run(debug  = True)

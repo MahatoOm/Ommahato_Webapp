@@ -19,7 +19,7 @@
             }
 
             select, textarea {
-                width:100%;
+                width:90%;
                 margin-top:4px;
             }
             textarea {
@@ -68,8 +68,42 @@
             head-admin{
                 display: grid;
             }
+            /* The class we will add to column i == 3 */
+            .highlight-column {
+                background-color: #f0f7ff !important; /* Light blue tint */
+                border-left: 2px solid #3b82f6 !important;
+                border-right: 2px solid #3b82f6 !important;
+                position: relative;
+                z-index: 10;
+                /* This creates the blue shadow "lift" effect */
+                box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2), 
+                            0 4px 6px -2px rgba(59, 130, 246, 0.1);
+            }
+
+            /* Add top border to header cell only */
+            th.highlight-column {
+                border-top: 2px solid #3b82f6 !important;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                color: #f59e0b
+            }
+
+            /* Add bottom border to last row cell only */
+            tr:last-child td.highlight-column {
+                border-bottom: 2px solid #3b82f6 !important;
+                border-bottom-left-radius: 8px;
+                border-bottom-right-radius: 8px;
+            }
+            /* Style for the currently selected cell */
+            .selected-cell {
+                background-color: #fffbeb !important; /* Light amber/yellow background */
+                outline: 3px solid #f59e0b !important; /* Amber border */
+                outline-offset: -3px; /* Keeps the outline inside the cell */
+                z-index: 20;
+                position: relative;
+            }
         </style>
-        <script src="code.jquery.com"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
 
     </head>
     <body>
@@ -111,14 +145,15 @@
 
         <form>
             <table id = "trackerTable">
-                <thead>
+                <thead id = "headerRow">
                     <tr id = "dateRow">
                         <th>Activity</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id = "bodyRows">
                     {% for activity in activities %}
                     <tr>
+                        
                         <th>{{ activity }}</th>
                         
                     </tr>
@@ -135,12 +170,14 @@
             // converting python list to javascript readable format, Json is that bridge
 
             activities = JSON.parse('{{ activities | tojson | safe }}');
-            totalweekdata = JSON.parse(' {{ totalweekdata | tojson | safe }}');
+            totalweekdata = {{ totalweekdata | tojson }};
             console.log("Activities:", activities);
 
             const table = document.getElementById("trackerTable");
             const headerRow = document.getElementById("dateRow");
             const bodyRows = table.querySelectorAll("tbody tr");
+            // const bodyRows = Array.from(document.getElementById("bodyRows").children);
+
 
             // tracks current time Sun Dec 14 2025 6:38:32 GMT-0600 
             let startDate = new Date();
@@ -177,12 +214,6 @@
                     changes: changedData
                     })
                 })
-
-
-
-
-
-
                 // .then(res => res.json())
                 // .then(data => {
                 //     alert("Saved!");
@@ -190,121 +221,116 @@
                 // });
                 }
             
-            function renderWeek(days = 7 , movement = 1) {
-                // clear old colums
-                // headerrow
-                
-                headerRow.innerHTML = "<th>Activity</th>";
-                bodyRows.forEach(row => {
-                    const activityName = row.children[0].textContent;
-                    row.innerHTML = `<th>${activityName}</th>`;
-                });
+            function renderWeek(days = 7) {
+    // Clear old columns
+    headerRow.innerHTML = "<th>Activity</th>";
+    bodyRows.forEach(row => {
+        const activityName = row.children[0].textContent;
+        row.innerHTML = `<th>${activityName}</th>`;
+    });
 
-                console.log(startDate , " indside the function")
-                
-                
-                // looping through days
-                for ( i=0 ; i<days; i++ ){
-                    const date = new Date(startDate);
-                    date.setDate(startDate.getDate() + i);
+    const today = new Date().toDateString(); // Today
+    let highlightIndex = null;
 
-                    // Header Cell
-                    const th = document.createElement("th");
-                    date_for = date.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        day : "2-digit",
-                        month: "short"
-                    });
-                    th.textContent = date_for;
-                    th.onclick = () => showMenu(th);
-                    headerRow.appendChild(th);
-                    
-                    // console.log("todays date: ", date)
-                // Body cells
-                bodyRows.forEach((row, idx) => {
-                    const td = document.createElement("td");
+    for (let i = 0; i < days; i++) {
+        // Compute the date for this column
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i); // startDate might be today - 3
 
-                    // Adding Listerners event
-                    // Select area
-                    const select = document.createElement("select");
-                    [
-                        {v: "-", t:"✋🏻 No Work"},
-                        { v: "✔", t: "✅ Done" },
-                        { v: "✖", t: "❌ Not Done" },
-                        { v: "~", t: "🤙 Continue" }
-                    ].forEach(optData => {
-                        const opt = document.createElement("option");
-                        opt.value = optData.v;
-                        opt.textContent = optData.t;
-                        select.appendChild(opt);
-                    })
-
-                    // Text Area
-                    const textarea = document.createElement("textarea")
-                    // console.log(row)
-
-                    // status data and note that come from database is managed here
-                    // ---- DATABASE DATA INJECTION ----
-
-                    const dayData = totalweekdata[i ]; // aligns with backend range
-
-                    if (dayData && dayData.habits) {
-                        const habitName = activities[idx];
-                        const habitData = dayData.habits[habitName];
-                        
-                        if (habitData) {
-                            console.log(habitData)
-                            // Set select value (NOT appendChild)
-                            select.value = habitData.status || "-";
-
-                            // Set textarea value
-                            textarea.value = habitData.note || "";
-                        }
-                    }
-                    // end of plotting the data from database
-
-                    select.onchange = () => {
-                    // console.log( activities[idx] , i , "status" , select.value , date )
-                    markChanged( activities[idx] , i , "status" , select.value , date)
-                    }
-
-                    textarea.oninput = () => {
-                    // console.log(activities[idx] , i, "note" , textarea.value, date)
-                    markChanged(activities[idx] , i, "note" , textarea.value, date)
-                    }
-                    
-                    
-
-                    // Cell menu
-                    const menu = document.createElement("div");
-                    // menu.className = "cell-menu";
-
-                    // const saveBtn = document.createElement("button");
-                    // saveBtn.textContent = "Save";
-                    // saveBtn.onclick = (e) => saveCell(e);
-
-                    // const updateBtn = document.createElement("button");
-                    // updateBtn.textContent = "Update";
-                    // updateBtn.onclick = (e) => updateCell(e);
-
-                    // const deleteBtn = document.createElement("button");
-                    // deleteBtn.textContent = "Delete";
-                    // deleteBtn.onclick = (e) => deleteCell(e);
-                    
-                    // menu.append(saveBtn, updateBtn, deleteBtn);                    
-                    // Append data to ceach table data cell
-                    td.append(select , textarea , menu);
-                    td.onclick = (e) => showMenu(td , e);
-                    row.appendChild(td);
-                
-
-            });
-       
+        // Header Cell
+        const th = document.createElement("th");
+        if (i == 3) {
+        th.classList.add("highlight-column");
     }
-   
+        const date_for = date.toLocaleDateString("en-US", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short"
+        });
+        if (i == 3){
+            th.textContent = "Today " + date_for;
 
-  }
 
+        }else{
+        th.textContent = date_for;
+        }
+        // th.onclick = () => showMenu(th);
+        headerRow.appendChild(th);
+        
+        
+
+        // Body cells
+        bodyRows.forEach((row, idx) => {
+            const td = document.createElement("td");
+            if (i == 3){
+                td.classList.add("highlight-column")
+
+            }
+
+            // Select dropdown
+            const select = document.createElement("select");
+            [
+                {v: "-", t:"✋🏻 No Work"},
+                {v: "✔", t: "✅ Done"},
+                {v: "✖", t: "❌ Not Done"},
+                {v: "~", t: "🤙 Continue"}
+            ].forEach(optData => {
+                const opt = document.createElement("option");
+                opt.value = optData.v;
+                opt.textContent = optData.t;
+                select.appendChild(opt);
+            });
+
+            // Textarea
+            const textarea = document.createElement("textarea");
+
+            // Inject database data
+            const dayData = totalweekdata[i];
+            if (dayData && dayData.habits) {
+                const habitName = activities[idx];
+                const habitData = dayData.habits[habitName];
+                if (habitData) {
+                    select.value = habitData.status || "-";
+                    textarea.value = habitData.note || "";
+                }
+            }
+
+            select.onchange = () => markChanged(activities[idx], i, "status", select.value, date);
+            textarea.oninput = () => markChanged(activities[idx], i, "note", textarea.value, date);
+
+            td.append(select, textarea);
+            td.addEventListener('click', function(e) {
+        // Stop selection if clicking inside the select or textarea specifically
+        // (Optional: remove this if you want the border even when typing)
+        handleCellSelection(td);
+        
+        // Call your existing showMenu function
+        showMenu(td, e);
+    });
+            td.onclick = (e) => showMenu(td, e);
+            row.appendChild(td);
+        });
+        
+        // th.classList.add("highlight-column");
+
+
+    }
+
+    
+    
+}
+
+            
+            function handleCellSelection(clickedTd) {
+            // 1. Remove 'selected-cell' class from any previously selected cell
+            const previouslySelected = document.querySelector('.selected-cell');
+            if (previouslySelected) {
+                previouslySelected.classList.remove('selected-cell');
+            }
+
+            // 2. Add the class to the clicked cell
+            clickedTd.classList.add('selected-cell');
+        }
 
             function showMenu(cell, event){
                 if (event) event.stopPropagation();

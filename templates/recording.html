@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Recorder</title>
+  <style>
+    body {
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .recorder-box {
+      width: 420px;
+      padding: 30px;
+      background: #020617;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .audio-bars {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 80px;
+      margin-bottom: 25px;
+      gap: 6px;
+    }
+
+    .bar {
+      width: 8px;
+      height: 10px;
+      background: #00fcff;
+      border-radius: 4px;
+      transition: height 0.1s;
+    }
+
+    button {
+      background: #22c55e;
+      color: #020617;
+      border: none;
+      padding: 12px 22px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button.recording {
+      background: #ef4444;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="recorder-box">
+  <div class="audio-bars" id="bars"></div>
+  <button id="recordBtn">Start Recording</button>
+</div>
+
+<script>
+  const barsContainer = document.getElementById("bars");
+  const recordBtn = document.getElementById("recordBtn");
+
+  const BAR_COUNT = 20;
+  const bars = [];
+
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const bar = document.createElement("div");
+    bar.classList.add("bar");
+    barsContainer.appendChild(bar);
+    bars.push(bar);
+  }
+
+  let audioContext;
+  let analyser;
+  let microphone;
+  let isRecording = false;
+  let animationId;
+
+  async function startRecording() {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    audioContext = new AudioContext();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 64;
+
+    microphone = audioContext.createMediaStreamSource(stream);
+    microphone.connect(analyser);
+
+    visualize();
+  }
+
+  function visualize() {
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    function animate() {
+      analyser.getByteFrequencyData(dataArray);
+
+      bars.forEach((bar, i) => {
+        const value = dataArray[i] || 0;
+        bar.style.height = `${value / 2}px`;
+      });
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  function stopRecording() {
+    cancelAnimationFrame(animationId);
+    bars.forEach(bar => bar.style.height = "10px");
+    audioContext.close();
+  }
+
+  recordBtn.addEventListener("click", async () => {
+    if (!isRecording) {
+      await startRecording();
+      recordBtn.textContent = "Stop Recording";
+      recordBtn.classList.add("recording");
+    } else {
+      stopRecording();
+      recordBtn.textContent = "Start Recording";
+      recordBtn.classList.remove("recording");
+    }
+    isRecording = !isRecording;
+  });
+</script>
+
+</body>
+</html>
