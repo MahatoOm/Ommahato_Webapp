@@ -111,3 +111,12 @@ def find_by_email(email ):
     })
     return True if data else False
 
+def username_by_email(email ):
+    data = collection2.find_one({
+        "email" :email,
+        
+    })
+    if "username" in data.keys():
+        return data["username"]
+    else: 
+        return "NoData"

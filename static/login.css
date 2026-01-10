@@ -1,0 +1,91 @@
+
+    * {
+        box-sizing: border-box;
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #38d1f0, #1aa7c6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    h2 {
+        margin-bottom: 5px;
+        color: #1f2937;
+        text-align: center;
+    }
+
+    h4 {
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: #6b7280;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    form {
+        background: #ffffff;
+        padding: 35px 40px;
+        border-radius: 12px;
+        width: 360px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    textbox {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 14px;
+        margin-top: 6px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        outline: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    input:focus {
+        border-color: #38d1f0;
+        box-shadow: 0 0 0 3px rgba(56, 209, 240, 0.25);
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        background: #38d1f0;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.25s ease, transform 0.15s ease;
+    }
+
+    .btn:hover {
+        background: #1aa7c6;
+        transform: translateY(-2px);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+    }
+
+    form br {
+        display: none;
+    }
+
+    form textbox:last-child {
+        color: #ef4444;
+        font-weight: bold;
+    }
+

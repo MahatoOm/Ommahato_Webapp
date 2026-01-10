@@ -243,6 +243,9 @@ def habitTracker():
     # print(session["email"])
 
     # print(username, email)
+    if not email:
+        # print(email)
+        return render_template("login.html")
 
     global list_item, weekdata
     list_item = ["Assignment" , "Work" , "Physical Exercise", "Project1", "Project2" ,"Today's learning", "A good thing", "A bad thing", "Note"]    
@@ -422,7 +425,7 @@ def week_data():
 
     totalweek = []
     for i in range(days):
-        day_str = str((start_date + timedelta(i-1)).strftime("%Y-%m-%d"))
+        day_str = str((start_date + timedelta(i)).strftime("%Y-%m-%d"))
 
         docs = database.find_by_date(session["email"], day_str)
         # print(docs)
@@ -458,25 +461,33 @@ def login():
             session["email"] = request.form.get('Email')
             password = request.form.get('Password')
             print(session["email"], session["username"], password)
+            
 
             if database.find_by_email(session['email']):
                 check = pw.check(session['email'], password)
                 print(check)
                 if check == True:
                     print(True)
+                   
+                    if not session["username"]:
+                        user = database.username_by_email(session["email"]) 
+                        if user != "NoData": 
+                            session["username"] = user
+                        else:
+                            session["username"] = "Admin"
+
                     return redirect(url_for('habitTracker'))
                 elif check == False:
                     print(check)
-                    flash("Invalid Credintials, Try again.")
-                    
+                    flash("Invalid Credintials, Try again.")                   
                     return render_template('login.html')
+                
                 else:
                     print(check)
                     key_val = random.randint(100000, 999999)
                     time = datetime.utcnow().isoformat()
 
                     # THreading is used to run send email asynchonocolly
-
                     threading.Thread(
                         target = user.resend_user_email,
                         args = (session["email"], key_val, time),
@@ -484,7 +495,7 @@ def login():
                     ).start()
 
                     key = key_val
-                    print(key, "in login")
+                    # print(key, "in login")
 
                     return render_template("entercode.html" )
 
@@ -510,6 +521,22 @@ def login():
     except Exception as e:
         print(traceback.format_exc())  # 👈 shows error in Render logs
         return "Server error", 500
+    
+@app.route('/logincheck')
+def logincheck():
+    
+
+    
+        # print("in log out" , session["email"], session["username"])
+    logOut()
+    if session:
+        print(session, "session")
+    return  render_template('login.html')
+
+def logOut():
+
+    session.clear()
+    return 
 
 
 

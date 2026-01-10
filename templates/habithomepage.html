@@ -6,16 +6,162 @@
             Habit Tracker
         </title>
         <style>
-            table {
-                border-collapse: collapse;
-                width: 100;
+            .container {
+                padding: 16px 24px;
+                /* width: 100vw; */
+                overflow-x: hidden;    /* horizontal scroll
+                /* white-space: nowrap; */
             }
+            .logoside{
+                display : flex;
+                flex-direction: column;
+                /* space-betwen: 12 px; */
+                align-items: center;
+                margin-bottom: 0 px;
+                
+            }
+            /* logo text */
+            #logo{
+                font-size:34px;
+                font-weight:800;
+                letter-spacing: 1px;
+                color : #0ea5e9;
+                margin:0;
+                padding:8px 24px;
+                border-radius:14px;
+                /* background: linear-gradient(135deg, #e0f7ff, #f0fcff); */
+                box-shadow: 0 10px 24px rgba(14,165,233,0.25);
+                position: relative;
+
+            }
+
+            /* Small accent underline */
+            /* #logo::after {
+                content: "";
+                position: absolute;
+                bottom:-6px;
+                left:50%;
+                transform:translatex(-50%);
+                width: 60%;
+                height: 4px;
+                background: linear-gradient(to right, #38d1f0, #0ea5e9);
+                border-radius: 4px;
+            } */
+
+            /* ===== TOP HEADER BAR ===== */
+            .head-controls {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 5px 20px;
+                background: linear-gradient(135deg, #FDEDED, #e7cdbc);
+                color: #161E54;
+                border-radius: 0 0 14px 14px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+                margin-bottom: 18px;
+            }
+
+            .head-controls h1 {
+                margin: 0;
+                font-size: 26px;
+                font-weight: 700;
+            }
+
+            /* Right-side user/admin section */
+            #head-admin {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+            }
+
+            /* Login / Logout buttons */
+            #head-admin button {
+                padding: 6px 14px;
+                border-radius: 8px;
+                border: none;
+                cursor: pointer;
+                font-weight: 600;
+                background: white;
+                color: #1aa7c6;
+                transition: all 0.2s ease;
+            }
+
+            #head-admin button:hover {
+                background: #e0f7fc;
+            }
+
+            /* ===== SAVE BUTTON ===== */
+            button[onclick="saveChanges()"] {
+                background: #22c55e;
+                color: white;
+                border: none;
+                padding: 10px 22px;
+                border-radius: 10px;
+                font-size: 15px;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 0 6px 18px rgba(34, 197, 94, 0.35);
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
+            }
+
+            button[onclick="saveChanges()"]:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 22px rgba(34, 197, 94, 0.45);
+            }
+            /* ===== NAV CONTROLS ===== */
+            .nav-controls {
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .nav-controls button {
+                padding: 8px 16px;
+                border-radius: 10px;
+                border: none;
+                background: #FF986A;
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s ease, transform 0.15s ease;
+            }
+
+            .nav-controls button:hover {
+                background: #1aa7c6;
+                transform: translateY(-1px);
+            }
+
+            /* ==== TABLE CONTROLS ===== */
+
+            table {
+                width: 100%;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+
             th, td {
                 border: 1px solid #444;
                 position:relative;
             }
             th {
                 background : #f2f2f2;
+            }
+            td {
+                background: white;
+                padding: 6px;
+                transition: background 0.15s ease;
+            }
+
+            td:hover {
+                background: #f0f9ff;
+            }
+
+            tr:first-child td,
+            tr:first-child th {
+                border-top: 2px solid #38d1f0;
             }
 
             select, textarea {
@@ -25,6 +171,26 @@
             textarea {
                 height : 45px;
             }
+            thead th {
+                background: linear-gradient(to bottom, #e6f9fd, #d1f3fb);
+                color: #0369a1;
+                font-weight: 700;
+                padding: 12px;
+                position: sticky;
+                top: 0;
+                z-index: 30;
+            }
+            tbody th {
+                background: #f8fafc;
+                font-weight: 700;
+                color: #0f172a;
+                position: sticky;
+                left: 0;
+                z-index: 20;
+                min-width: 160px;
+            }
+
+
             
 
             /* Floating action menu */
@@ -106,45 +272,52 @@
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
 
     </head>
-    <body>
+    <body >
         <div class = "head-controls">  
-        <div>
-            <h1>
-            Habit Tracker
-        </h1>
-        </div>
-        <div id = head-admin>
-            <form action = '/login'>
-            
-            <h3>Hi, {{ username }} </h3>
-            <h5>{{ email }}</h5>
-            {% if username == "Friend"  or username == None %}
-            <button id='actionlogin' name='actionlogin'>Login/Sign Up</button>
-            <p>Status: <span id="statusMessage">Waiting...</span></p>
-            {% endif %}    
-            </form>
-        
-        
-        </div>      
-        
-        </div>
-
-        <div class="nav-controls">
+        <div class = "logoside">
             <div>
+
+                <h1 id = "logo">
+                    Habit Tracker
+                </h1>
+            </div>
+        <div class="nav-controls">
+            <!-- <div>
                 <button onclick="changeWeek(-1)"> 👈 Previouos Week</button>
                 <button onclick="changeWeek(1)"> 👉 Next Week</button>
-            </div>
+            </div> -->
 
             <div>
                 
-                <button onclick="addDay()">🗽 New Day</button>
+                <!-- <button onclick="addDay()">🗽 New Day</button> -->
                 <button onclick="previousWeek()">🗽 Previous Week</button>
                 <button onclick="addWeek()">🗓️ New Week</button>
             </div>
+        </div> 
+        </div>
+        <button onclick = saveChanges() > Save All</button>
+        <div id = head-admin>
+            <form action = '/logincheck'>
+           <h3>Hi, {{ username }} </h3>
+            <h5>{{ email }}</h5>
+            {% if username == "Friend"  or username == None %}
+            <button id='actionlogin' name='actionlogin'>Login</button>
+            <p>Status: <span id="statusMessage">Waiting...</span></p>
+            {% elif (email) %}
+            <button id='actionlogout' name='actionlogout'>Log Out</button>
+            {% endif %}    
+            </form>    
+        </div>  
+            
+        
+        
         </div>
 
-        <form>
-            <table id = "trackerTable">
+        <div class = "container">
+            
+
+        <form >
+            <table id = "trackerTable" ">
                 <thead id = "headerRow">
                     <tr id = "dateRow">
                         <th>Activity</th>
@@ -165,7 +338,7 @@
             <br>
             <button onclick = saveChanges() > Save All</button>
         </form>
-
+        </div>
         <script>
             // converting python list to javascript readable format, Json is that bridge
 
@@ -181,6 +354,7 @@
 
             // tracks current time Sun Dec 14 2025 6:38:32 GMT-0600 
             let startDate = new Date();
+            let todayDate = new Date();
             startDate.setDate(startDate.getDate() - 3);
             let endDate = new Date();
             endDate.setDate(startDate.getDate() +7);
@@ -222,103 +396,106 @@
                 }
             
             function renderWeek(days = 7) {
-    // Clear old columns
-    headerRow.innerHTML = "<th>Activity</th>";
-    bodyRows.forEach(row => {
-        const activityName = row.children[0].textContent;
-        row.innerHTML = `<th>${activityName}</th>`;
-    });
+                // Clear old columns
+                headerRow.innerHTML = "<th>Activity</th>";
+                bodyRows.forEach(row => {
+                    const activityName = row.children[0].textContent;
+                    row.innerHTML = `<th>${activityName}</th>`;
+                });
 
-    const today = new Date().toDateString(); // Today
-    let highlightIndex = null;
+                const today = new Date().toDateString(); // Today
+                let highlightIndex = null;
 
-    for (let i = 0; i < days; i++) {
-        // Compute the date for this column
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i); // startDate might be today - 3
+                for (let i = 0; i < days; i++) {
+                    // Compute the date for this column
+                    const date = new Date(startDate);
+                    const checkdate = new Date(startDate);
+                    date.setDate(startDate.getDate() + i); // startDate might be today - 3
+                    checkdate.setDate(startDate.getDate() + i); // startDate might be today - 3
 
-        // Header Cell
-        const th = document.createElement("th");
-        if (i == 3) {
-        th.classList.add("highlight-column");
-    }
-        const date_for = date.toLocaleDateString("en-US", {
-            weekday: "short",
-            day: "2-digit",
-            month: "short"
-        });
-        if (i == 3){
-            th.textContent = "Today " + date_for;
-
-
-        }else{
-        th.textContent = date_for;
-        }
-        // th.onclick = () => showMenu(th);
-        headerRow.appendChild(th);
+                    // Header Cell
+                    const th = document.createElement("th");
         
-        
-
-        // Body cells
-        bodyRows.forEach((row, idx) => {
-            const td = document.createElement("td");
-            if (i == 3){
-                td.classList.add("highlight-column")
-
-            }
-
-            // Select dropdown
-            const select = document.createElement("select");
-            [
-                {v: "-", t:"✋🏻 No Work"},
-                {v: "✔", t: "✅ Done"},
-                {v: "✖", t: "❌ Not Done"},
-                {v: "~", t: "🤙 Continue"}
-            ].forEach(optData => {
-                const opt = document.createElement("option");
-                opt.value = optData.v;
-                opt.textContent = optData.t;
-                select.appendChild(opt);
-            });
-
-            // Textarea
-            const textarea = document.createElement("textarea");
-
-            // Inject database data
-            const dayData = totalweekdata[i];
-            if (dayData && dayData.habits) {
-                const habitName = activities[idx];
-                const habitData = dayData.habits[habitName];
-                if (habitData) {
-                    select.value = habitData.status || "-";
-                    textarea.value = habitData.note || "";
+                    if (checkdate.getTime() === todayDate.getTime()) {
+                    th.classList.add("highlight-column");
                 }
+                    const date_for = date.toLocaleDateString("en-US", {
+                        weekday: "short",
+                        day: "2-digit",
+                        month: "short"
+                    });
+                    if (checkdate.getTime()  === todayDate.getTime() ){
+                        th.textContent = "Today " + date_for;
+
+
+                    }else{
+                    th.textContent = date_for;
+                    }
+                    // th.onclick = () => showMenu(th);
+                    headerRow.appendChild(th);
+                    
+                    
+
+                    // Body cells
+                    bodyRows.forEach((row, idx) => {
+                        const td = document.createElement("td");
+                        if (checkdate.getTime()  === todayDate.getTime() ){
+                            td.classList.add("highlight-column")
+
+                        }
+
+                        // Select dropdown
+                        const select = document.createElement("select");
+                        [
+                            {v: "-", t:"✋🏻 No Work"},
+                            {v: "✔", t: "✅ Done"},
+                            {v: "✖", t: "❌ Not Done"},
+                            {v: "~", t: "🤙 Continue"}
+                        ].forEach(optData => {
+                            const opt = document.createElement("option");
+                            opt.value = optData.v;
+                            opt.textContent = optData.t;
+                            select.appendChild(opt);
+                        });
+
+                        // Textarea
+                        const textarea = document.createElement("textarea");
+
+                        // Inject database data
+                        const dayData = totalweekdata[i];
+                        if (dayData && dayData.habits) {
+                            const habitName = activities[idx];
+                            const habitData = dayData.habits[habitName];
+                            if (habitData) {
+                                select.value = habitData.status || "-";
+                                textarea.value = habitData.note || "";
+                            }
+                        }
+
+                        select.onchange = () => markChanged(activities[idx], i, "status", select.value, date);
+                        textarea.oninput = () => markChanged(activities[idx], i, "note", textarea.value, date);
+
+                        td.append(select, textarea);
+                        td.addEventListener('click', function(e) {
+                    // Stop selection if clicking inside the select or textarea specifically
+                    // (Optional: remove this if you want the border even when typing)
+                    handleCellSelection(td);
+                    
+                    // Call your existing showMenu function
+                    showMenu(td, e);
+                });
+                        td.onclick = (e) => showMenu(td, e);
+                        row.appendChild(td);
+                    });
+                    
+                    // th.classList.add("highlight-column");
+
+
+                }
+
+                
+                
             }
-
-            select.onchange = () => markChanged(activities[idx], i, "status", select.value, date);
-            textarea.oninput = () => markChanged(activities[idx], i, "note", textarea.value, date);
-
-            td.append(select, textarea);
-            td.addEventListener('click', function(e) {
-        // Stop selection if clicking inside the select or textarea specifically
-        // (Optional: remove this if you want the border even when typing)
-        handleCellSelection(td);
-        
-        // Call your existing showMenu function
-        showMenu(td, e);
-    });
-            td.onclick = (e) => showMenu(td, e);
-            row.appendChild(td);
-        });
-        
-        // th.classList.add("highlight-column");
-
-
-    }
-
-    
-    
-}
 
             
             function handleCellSelection(clickedTd) {
@@ -357,6 +534,8 @@
             }
 
             function changeWeek(offset) {
+                
+
                 startDate.setDate(startDate.getDate() + offset *7);
                 renderWeek();
             }
