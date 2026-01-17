@@ -345,6 +345,7 @@
             activities = JSON.parse('{{ activities | tojson | safe }}');
             totalweekdata = {{ totalweekdata | tojson }};
             console.log("Activities:", activities);
+            console.log("TotalWeekData", totalweekdata)
 
             const table = document.getElementById("trackerTable");
             const headerRow = document.getElementById("dateRow");

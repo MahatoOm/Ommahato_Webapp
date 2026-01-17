@@ -279,6 +279,7 @@ def habitTracker():
     # print("username start page",username, email)
     # print(totalweek)
     weekdata = totalweek
+    print(totalweek)
     return render_template("habithomepage.html", activities = list_item , totalweekdata = totalweek, username = username, email = email)
  
 
@@ -610,4 +611,4 @@ def record():
     return render_template("recording.html")
 
 if __name__ == '__main__' :
-    app.run(debug  = True)
+    app.run(debug  = True , port="8080")
