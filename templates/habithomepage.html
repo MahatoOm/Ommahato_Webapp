@@ -317,7 +317,7 @@
             
 
         <form >
-            <table id = "trackerTable" ">
+            <table id = "trackerTable" >
                 <thead id = "headerRow">
                     <tr id = "dateRow">
                         <th>Activity</th>
@@ -328,6 +328,7 @@
                     <tr>
                         
                         <th>{{ activity }}</th>
+                        
                         
                     </tr>
                     {% endfor %}
@@ -341,7 +342,18 @@
         </div>
         <script>
             // converting python list to javascript readable format, Json is that bridge
+            
 
+            const dateStr = {{ start_date | tojson }};
+            const now = new Date();
+
+            const dateObj = new Date(
+            dateStr + "T" +
+            now.toTimeString().slice(0, 8)
+            );
+            console.log(dateStr, dateObj ,"dateStr")
+            console.log(typeof(start_date) ,  typeof("{{ start_date }}"));
+            
             activities = JSON.parse('{{ activities | tojson | safe }}');
             totalweekdata = {{ totalweekdata | tojson }};
             console.log("Activities:", activities);
@@ -354,13 +366,14 @@
 
 
             // tracks current time Sun Dec 14 2025 6:38:32 GMT-0600 
-            let startDate = new Date();
-            let todayDate = new Date();
+            // let startDate = new Date();
+            let startDate = dateObj;
+            let todayDate = new Date(startDate);
+            
             startDate.setDate(startDate.getDate() - 3);
             let endDate = new Date();
             endDate.setDate(startDate.getDate() +7);
             let day = 7;
-
 
             const changedData = {};
             function markChanged(activity, dayIndex, field, value, chdate) {
@@ -426,6 +439,7 @@
                         month: "short"
                     });
                     if (checkdate.getTime()  === todayDate.getTime() ){
+                        console.log(todayDate, checkdate, "ck 24")
                         th.textContent = "Today " + date_for;
 
 

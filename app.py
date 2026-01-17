@@ -280,7 +280,9 @@ def habitTracker():
     # print(totalweek)
     weekdata = totalweek
     print(totalweek)
-    return render_template("habithomepage.html", activities = list_item , totalweekdata = totalweek, username = username, email = email)
+    print(todays_date)
+
+    return render_template("habithomepage.html", activities = list_item , totalweekdata = totalweek, username = username, email = email, start_date = date.today().isoformat() ) 
  
 
 
