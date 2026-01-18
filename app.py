@@ -370,8 +370,8 @@ def upload_data(username ,email , habit, upload_date ,event_date, data):
     # print(res , 'sucessfull')
     return 
 
-from datetime import datetime, timedelta
 
+from datetime import datetime, timedelta
 @app.route('/retrieve_data', methods=['GET'])
 def retrieve_data():
     global email, username
@@ -463,7 +463,7 @@ def login():
             session["username"] = request.form.get("Name")
             session["email"] = request.form.get('Email')
             password = request.form.get('Password')
-            print(session["email"], session["username"], password)
+            # print(session["email"], session["username"], password)
             
 
             if database.find_by_email(session['email']):
@@ -483,7 +483,7 @@ def login():
                 elif check == False:
                     print(check)
                     flash("Invalid Credintials, Try again.")                   
-                    return render_template('login.html')
+                    return render_template('login.html' , email = session["email"], username = session["username"])
                 
                 else:
                     print(check)
@@ -554,6 +554,11 @@ def code():
         # print(key ,"in code")
         # print(type(userinput) , userinput, key)
         if int(userinput) == key:
+            if password == "":
+                print(password, "password")
+                return render_template("newpassword.html")
+            
+
             database.add_user(session["email"], password, session["username"])
             # print(username)
             # print(key)
@@ -573,6 +578,41 @@ def code():
     else:            
         return render_template("entercode.html")
 
+em = ""   
+@app.route("/forgetPassword", methods = ["POST", "GET"])
+def forget():
+    global key,em
+    if request.method == "POST":
+        em = request.form.get("Email")
+        print(email)
+
+        key_val = random.randint(100000, 999999)
+        time = datetime.utcnow().isoformat()
+
+# THreading is used to run send email asynchonocolly
+
+        threading.Thread(
+            target = user.resend_user_email,
+            args = (em, key_val, time),
+            daemon =True
+        ).start()
+
+        key = key_val
+
+
+        return render_template("entercode.html")
+
+    return render_template("forgetpassword.html")
+@app.route("/newPassword" , methods = ["GET", "POST"])
+def newPassword():
+    global em, password
+    if request.method == "POST":
+        password = request.form.get("new")
+        print(em , password, "check 42")
+        database.updatePassword(em, password)
+        print()
+        return render_template("login.html")
+    
 
 # Fetch the Notebooks 
 from kaggle.api.kaggle_api_extended import KaggleApi

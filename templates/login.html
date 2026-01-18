@@ -10,17 +10,31 @@
             <h2>Habit Tracker</h2>
             <h4>Login Page</h4>
 
-            <form id="login" action = '/login' method = 'POST' >
+            <form id="login" action = '/login' method = 'POST'>
                 <textbox type = "text" >Usename: </textbox>
                 <input type="text" name="Name" placeholder="Username"></br></br>
 
-                <textbox type = "text" >Email: </textbox>
-                <input type="email" name="Email" placeholder="Your Email" required><textbox type = "text" > *</textbox></br></br>
-                <textbox type = "text" >Password: </textbox>
-                <input type="password" name="Password" placeholder="*********" required><textbox type = "text" > *</textbox></br></br>
-                
+                <textbox type = "text" >Email: </textbox><textbox type = "text" > *</textbox>
+                <input type="email" name="Email" placeholder="Your Email" required></br></br>
+                <textbox type = "text" >Password: </textbox><textbox type = "text" > *</textbox>
+                <input type="password" id = "password" name="Password" placeholder="*********" required></br>
+                </br>
+            
+                <p id="error" style="color: red; display: none;">
+                    Incorrect Password
+                </p>
+
+                <br>    
                 <button type="submit" class="btn">Submit</button>
+                <!-- <textbox id="forget" type = "text" onclick = forgetPassword()>Forget Password?</textbox> -->
+                <a href="/forgetPassword">Forget Password?</a>
             </form>
+
+            <script>
+                const password = document.getElementById("password").value;
+                const error = document.getElementById("error");            
+            </script>
+
         </body>
     </html>
 </Doctype.html>

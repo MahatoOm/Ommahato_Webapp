@@ -295,7 +295,7 @@
             </div>
         </div> 
         </div>
-        <button onclick = saveChanges() > Save All</button>
+        <button type= "submit" onclick = saveChanges() > Save All</button>
         <div id = head-admin>
             <form action = '/logincheck'>
            <h3>Hi, {{ username }} </h3>
@@ -337,13 +337,13 @@
             </table>
 
             <br>
-            <button onclick = saveChanges() > Save All</button>
+            <button type= "submit" onclick = saveChanges() > Save All</button>
         </form>
         </div>
         <script>
             // converting python list to javascript readable format, Json is that bridge
             
-
+            // got the date from python backend, however it is in string format , changing it to real format
             const dateStr = {{ start_date | tojson }};
             const now = new Date();
 

@@ -4,12 +4,13 @@
             <title>
                 Enter Code
             </title>
+            <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
         </head>
         <body>
             <h2>Habit Tracker</h2>
             <h4>Login Code</h4>
 
-            <form id="code" action = '/entercode' method = "POST">
+            <form id="login" action = '/entercode' method = "POST">
                 <input type="text" name="enteredcode" placeholder="123456" required>               
                 <button type="submit" class="btn">Submit</button>
                 
@@ -17,7 +18,7 @@
             <div class = "container">
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong>Holy Buddy!</strong> You should check in on some emails.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
                 </div>
             </div>
 
@@ -30,7 +31,6 @@
                     {% endif %}
 
                 {% endwith %}
-
             </div>
 
 <!-- <script>

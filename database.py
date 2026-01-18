@@ -103,7 +103,25 @@ def add_user(email , password, username = "Friend" ):
         },
         upsert = True, 
         )
-    
+    return
+def updatePassword(email, password):
+    collection2.update_one({
+        "email": email,
+    },
+
+    {
+        "$set": {
+            "password": password,
+            "login_at": datetime.utcnow(),
+        },
+        "$setOnInsert": {
+                "created_at": datetime.utcnow()
+            }
+
+    }
+
+    )
+    return 
 def find_by_email(email ):
     data = collection2.find({
         "email" :email,
